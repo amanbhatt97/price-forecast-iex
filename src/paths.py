@@ -25,9 +25,9 @@ class ProjectPaths:
 
         # define paths for various directories
         self.data = os.path.join(parent_directory, 'data')      # store data
-        self.models = os.path.join(parent_directory, 'src')     # source scripts
+        self.src = os.path.join(parent_directory, 'src')     # source scripts
         self.deploy = os.path.join(parent_directory, 'deploy')      # forecasting/reports scripts
-        self.config = os.path.join(parent_directory, 'config')      # configuration files
+        self.config = os.path.join(parent_directory, 'config')      # configuration files    
 
         self.dam_logs = os.path.join(parent_directory, 'logs', 'day_ahead')     # logs for dam
         self.dir_logs = os.path.join(parent_directory, 'logs', 'directional')     # logs for directional
@@ -47,7 +47,7 @@ class ProjectPaths:
         create necessary directories if they do not exist.
         """
         directories = [
-            self.data, self.models, self.deploy, self.config, self.dam_logs, self.dir_logs,
+            self.data, self.src, self.deploy, self.config, self.dam_logs, self.dir_logs,
             self.forecasts_dam, self.forecasts_dir, self.reports_dam, self.reports_dir
         ]
 
