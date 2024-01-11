@@ -1,5 +1,7 @@
 """ 
-This script defines the path for different directories/files present in this project. 
+This script defines the path for different directories/files present in this project.
+
+author: Aman Bhatt 
 """
 
 #----- dependencies -----#
