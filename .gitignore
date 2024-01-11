@@ -22,4 +22,4 @@ forecasts/
 reports/
 
 # Configuration Files
-config/
+.env
