@@ -17,6 +17,7 @@ logs/
 *.log
 
 # Generated Files or Directories
+data/
 forecasts/
 reports/
 
