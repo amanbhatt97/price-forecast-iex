@@ -16,9 +16,8 @@ user_email = os.getenv('email')
 user_password = os.getenv('password')
 
 # Parent directory
-script_dir = os.path.dirname(os.path.realpath(__file__))
-parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir, os.pardir))
-sys.path.append(parent_dir)
+ROOT_PATH = os.getenv('ROOT_PATH')
+sys.path.append(ROOT_PATH)
 
 # Custom modules
 from config.paths import *
