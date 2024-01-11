@@ -2,7 +2,7 @@
 This script fetches day-ahead market (DAM) data, save raw data into data/raw,
 process the data and save it into data/processed.
 
-Author: Aman Bhatt
+@author: aman bhatt
 """
 
 import os, sys, time
