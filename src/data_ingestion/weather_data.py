@@ -28,21 +28,34 @@ def get_weather_response(lat, lon, asl, name):
     except Exception as e:
         print("Error occurred while retrieving data:", str(e))
 
+def get_solar_response(lat, lon, asl, name):
+    """ This method fetches solar data from meteoblue API """ 
+    try:
+        url = f"http://my.meteoblue.com/packages/solar-15min?name={name}&lat={lat}&lon={lon}&asl={asl}&tz=UTC&apikey={api_key}"
+        response = requests.get(url)
+        data = response.json()
+        return data
+    
+    except Exception as e:
+        print("Error occurred while retrieving data:", str(e))
 
-def fetch_weather_data(locations, required_features, para='weather'):
+def fetch_weather_data(locations, required_features, location_type):
     df_combined = pd.DataFrame()
 
     for location in locations:
         lat, lon, asl, name = location
-        data_dict = get_weather_response(lat, lon, asl, name)
-        df = pd.DataFrame.from_dict(data_dict['data_1h'])
-        df.to_pickle(os.path.join(data_path, 'raw', 'weather'))
+        if location_type == 'solar':
+            data_dict = get_solar_response(lat, lon, asl, name)
+            df = pd.DataFrame.from_dict(data_dict['data_xmin'])
+        else:
+            data_dict = get_weather_response(lat, lon, asl, name)
+            df = pd.DataFrame.from_dict(data_dict['data_1h'])
+
         df = preprocess_weather_data(df, required_features, name)
         df_combined = pd.concat([df_combined, df], ignore_index=True)
-
     df_combined = resample_and_interpolate(df_combined)
+    df_combined.to_pickle(os.path.join(data_path, 'raw', f'{location_type}'))
     return df_combined
-
 
 def preprocess_weather_data(df, required_features, name):
     cols = required_features
@@ -59,7 +72,6 @@ def preprocess_weather_data(df, required_features, name):
     df['location'] = name
     return df
 
-
 def resample_and_interpolate(df):
     df = df.pivot(index='datetime', columns='location')
     df.columns = [f"{col[0]}_{col[1][:3]}" for col in df.columns]
@@ -68,26 +80,25 @@ def resample_and_interpolate(df):
     df = df.set_index('datetime').resample('15MIN').interpolate(method='linear').reset_index()
     return df
 
-
-def load_locations(file_path):
+def load_locations(file_path, location_type):
     with open(file_path, 'r') as file:
         locations = yaml.safe_load(file)
-    return locations['weather_locations']
+    return locations[location_type]
 
-
-def get_weather():
+def get_processed_weather(location_type):
     # Load weather locations from YAML file
-    locations = load_locations(os.path.join(ROOT_PATH, 'config', 'locations.yaml'))
+    locations = load_locations(os.path.join(ROOT_PATH, 'config', 'locations.yaml'), location_type)
 
-    required_features = ['temperature', 'felttemperature', 'relativehumidity', 'precipitation']
-    weather_df = fetch_weather_data(locations, required_features)
+    # Get required features based on location type
+    required_features = locations['required_features']
 
-    start_date = weather_df['datetime'].iloc[0]
-    weather_historical = pd.read_pickle(os.path.join(data_path, 'processed', 'weather_data'))
-    weather_historical = weather_historical[weather_historical['datetime'] < start_date]
-    weather = pd.concat([weather_historical, weather_df]).reset_index(drop=True)
+    raw_df = fetch_weather_data(locations['locations'], required_features, location_type)
 
-    weather.to_pickle(os.path.join(data_path, 'processed', 'weather_data'))
+    start_date = raw_df['datetime'].iloc[0]
+    data_historical = pd.read_pickle(os.path.join(data_path, 'processed', f'{location_type}_data'))
+    data_historical = data_historical[data_historical['datetime'] < start_date]
+    final_df = pd.concat([data_historical, raw_df]).reset_index(drop=True)
+    final_df.to_pickle(os.path.join(data_path, 'processed', f'{location_type}_data'))
 
-    last_date = weather['datetime'].iloc[-1]
-    return weather
+    last_date = final_df['datetime'].iloc[-1]
+    return final_df
