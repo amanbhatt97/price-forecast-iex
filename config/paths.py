@@ -1,79 +1,70 @@
-""" 
-This script defines the path for different directories/files present in this project.
+"""
+Path definitions for various directories/files in the project.
 
-author: Aman Bhatt 
+Author: Aman Bhatt
 """
 
-#----- dependencies -----#
+from pathlib import Path
+import sys
 
-import os,sys   # working with file paths and the file system
-
-
-
-#----- parent directory -----#
-
-script_dir = os.path.dirname(os.path.realpath(__file__))    # current script's directory
-project_dir = os.path.abspath(os.path.join(script_dir, os.pardir))       # get the parent directory
-sys.path.append(project_dir)     # add the parent directory to the system path
-
+# Parent directory
+script_dir = Path(__file__).resolve().parent
+project_dir = script_dir.parent
+sys.path.append(project_dir)  # Add the parent directory to the system path
 
 
 class ProjectPaths:
-
     def __init__(self, parent_directory):
+        """
+        Initialize ProjectPaths class.
 
-        # store the parent directory
+        Args:
+            parent_directory (Path): The parent directory of the project.
+        """
+        # Store the parent directory
         self.parent_directory = parent_directory
 
-        # define paths for various directories
-        self.data = os.path.join(parent_directory, 'data')      # store data
-        self.src = os.path.join(parent_directory, 'src')     # source scripts
-        self.deploy = os.path.join(parent_directory, 'deploy')      # forecasting/reports scripts
-        self.config = os.path.join(parent_directory, 'config')      # configuration files    
+        # Define paths for various directories
+        self.data = parent_directory / 'data'  # Store data
+        self.src = parent_directory / 'src'  # Source scripts
+        self.deploy = parent_directory / 'deploy'  # Forecasting/reports scripts
+        self.config = parent_directory / 'config'  # Configuration files
+        self.logs = parent_directory / 'logs'  # Logs
+        self.forecasts_dam = parent_directory / 'forecasts' / 'day_ahead'  # DAM forecast files
+        self.forecasts_dir = parent_directory / 'forecasts' / 'directional'  # Directional forecast files
+        self.reports_dam = parent_directory / 'reports' / 'day_ahead'  # DAM reports
+        self.reports_dir = parent_directory / 'reports' / 'directional'  # Directional reports
 
-        self.logs = os.path.join(parent_directory, 'logs')     # logs
-
-        self.forecasts_dam = os.path.join(parent_directory, 'forecasts', 'day_ahead')   # dam forecast files
-        self.forecasts_dir = os.path.join(parent_directory, 'forecasts', 'directional')     # directional forecast files
-
-        self.reports_dam = os.path.join(parent_directory, 'reports', 'day_ahead')       # dam reports
-        self.reports_dir = os.path.join(parent_directory, 'reports', 'directional')     # directional reports
-
-        # create directories if they do not exist
+        # Create directories if they do not exist
         self.create_directories()
-
 
     def create_directories(self):
         """
-        create necessary directories if they do not exist.
+        Create necessary directories if they do not exist.
         """
         directories = [
             self.data, self.src, self.deploy, self.config, self.logs,
             self.forecasts_dam, self.forecasts_dir, self.reports_dam, self.reports_dir
         ]
 
-        # create directories if they do not exist
+        # Create directories if they do not exist
         for directory in directories:
-            os.makedirs(directory, exist_ok=True)
+            directory.mkdir(parents=True, exist_ok=True)
 
 
+# Create an instance of the ProjectPaths class
+project_paths = ProjectPaths(project_dir)
 
-# create an instance of the ProjectPaths class
-project_paths = ProjectPaths(project_dir)  
-
-
-# data path
+# Data path
 data_path = project_paths.data
 
-# logs_path
+# Logs path
 log_path = project_paths.logs
 
-# forecast paths
+# Forecast paths
 dam_forecast_path = project_paths.forecasts_dam
-dir_forecast_path = project_paths.forecasts_dir 
+dir_forecast_path = project_paths.forecasts_dir
 
-
-# accuracy reports path
+# Accuracy reports path
 dam_reports_path = project_paths.reports_dam
 dir_reports_path = project_paths.reports_dir
-
