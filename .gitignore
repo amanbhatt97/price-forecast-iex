@@ -1,0 +1,24 @@
+# Virtual Environment
+env/
+
+# Python Compiled Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE/Editor Specific
+.vscode/
+.idea/
+*.pyc
+
+# Logs and Temporary Files
+logs/
+*.log
+
+# Generated Files or Directories
+forecasts/
+reports/
+
+# Configuration Files
+config/
