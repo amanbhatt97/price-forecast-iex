@@ -5,12 +5,15 @@ process the data and save it into data/processed.
 Author: Aman Bhatt
 """
 
-import os
-import sys
+import os, sys, time
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
 import logging
+
+os.environ['TZ'] = 'Asia/Calcutta'
+time.tzset()
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -37,14 +40,13 @@ logging.basicConfig(
     filename=os.path.join(log_path, 'dam.log')  # Save logs to a file named 'error.log'
 )
 
-
 # Datetime variables
 dam_historical = pd.read_pickle(os.path.join(data_path, 'processed', 'dam_data'))
 last_date = dam_historical['datetime'].iloc[-1].strftime('%d-%m-%Y')
 
 # Fetch data from last available data upto latest data available
 start_date = dam_historical['datetime'].iloc[-1] + timedelta(days=1)
-end_date = datetime.now() + timedelta(days=1)
+end_date = datetime.now() + timedelta(days=2)
 
 # Dates in string format
 start_date_str = start_date.strftime("%d-%m-%Y")
@@ -93,18 +95,66 @@ def get_dam_api(start_date_str, end_date_str, token):
     except Exception as e:
         logging.info("Error occurred while retrieving data:", str(e))
 
-def get_dam_actual():
+def get_raw_dam():
     """
     Fetches DAM (Day-Ahead Market) actual data and logs information.
 
     Returns:
         pd.DataFrame: DataFrame containing the fetched DAM data.
     """
-    token = get_token(base_url)
-    data_dict = get_dam_api(start_date_str, end_date_str, token)
-    raw_data = pd.DataFrame(data_dict['data'])
-    raw_data.to_pickle(os.path.join(data_path, 'raw', 'dam'))
-    return raw_data
+    try:
+        logging.info('Fetching token...')
+        token = get_token(base_url)
+        data_dict = get_dam_api(start_date_str, end_date_str, token)
+        raw_data = pd.DataFrame(data_dict['data'])
+        if raw_data.empty:
+            logging.warning('Data is already updated upto: ', dam_historical['datetime'].iloc[-1])
+            print('Data is already updated upto: ', dam_historical['datetime'].iloc[-1])
+            return pd.DataFrame()
+        else:
+            print('Data updated upto: ', raw_data['date'].iloc[-1])
+            logging.info('Data updated upto: ', raw_data['date'].iloc[-1])
+            raw_data.to_pickle(os.path.join(data_path, 'raw', 'dam'))
+            return raw_data
+    except Exception as e:
+        logging.info("Error in fetching data:", str(e)) 
 
+def get_dam_actual():
+    """
+    Perform preprocessing on day-ahead market data.
 
+    Returns:
+        pd.DataFrame: Processed day-ahead market data.
+    """
 
+    logging.info('Fetching dam data...')
+    raw_data = get_raw_dam()
+
+    if not raw_data.empty:
+        # removing reduntant columns
+        df = raw_data[['mcp', 'mcv', 'purchase_bid', 'sell_bid']]
+
+        # converting to numeric type
+        for column in df.columns:
+            df.loc[:, column] = pd.to_numeric(df[column], errors='coerce').copy()
+
+        # renaming
+        df = df.rename(columns={'mcp': 'mcp_dam', 'mcv': 'clearedvolume_dam',
+                            'purchase_bid': 'pb_dam', 'sell_bid': 'sb_dam'})
+
+        # creating difference feature
+        df['diff_sb_pb_dam'] = df['pb_dam'] - df['sb_dam']
+
+        # creating daterange and merging to raw data
+        dates = pd.date_range(start=start_date.date(), end=end_date.date(), freq='15min')[:-1]
+        current_dam = pd.DataFrame({'datetime': dates})
+        current_dam = pd.concat([current_dam, df], axis=1).dropna()
+
+        # merging with historical data
+        dam = pd.concat([dam_historical, current_dam]).reset_index(drop=True)
+
+        # saving data
+        dam.to_pickle(os.path.join(data_path, 'processed', 'dam_data'))
+
+    else:
+        return dam_historical
