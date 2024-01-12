@@ -61,10 +61,45 @@ The project is structured to facilitate both the training of models and the fore
 
 ## Project Structure
 
-The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. Key folders include:
-- `data`: Contains raw and processed data.
-- `models`: Stores trained machine learning models.
-- `src`: Contains source code for data processing, feature engineering, model training, and forecasting.
+The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. 
+📦 Price-Forecast-IEX
+├── 📄 LICENSE                # Project license file
+├── 📄 README.md              # Project documentation
+├── 📁 config                 # Configuration files
+│   ├── 📂 __pycache__        # Compiled Python files (ignored)
+│   ├── 📄 locations.yaml     # YAML file containing location configurations
+│   ├── 📄 paths.py           # Python module for handling file paths
+│   └── 📄 utils.py           # Python module containing utility functions
+├── 📁 data                   # Data storage directory
+│   ├── 📁 external           # External datasets
+│   ├── 📁 processed          # Processed data files
+│   └── 📁 raw                # Raw data files
+├── 📁 deploy                 # Deployment scripts
+│   └── 📄 dam_train.py       # Python script for DAM training
+├── 📁 env                    # Virtual environment folder (ignored)
+├── 📁 forecasts              # Forecast outputs
+│   ├── 📁 day_ahead          # Day-ahead forecasts
+│   └── 📁 directional        # Directional forecasts
+├── 📁 logs                   # Log files
+├── 📁 models                 # Trained machine learning models
+├── 📁 notebooks              # Jupyter notebooks
+│   └── 📄 dam_train.ipynb    # Example notebook for DAM training
+├── 📁 reports                # Forecast evaluation reports
+│   ├── 📁 day_ahead          # Reports for day-ahead forecasts
+│   └── 📁 directional        # Reports for directional forecasts
+└── 📁 src                    # Source code
+    ├── 📁 data_ingestion     # Data ingestion module
+    │   ├── 📂 __pycache__    # Compiled Python files (ignored)
+    │   ├── 📄 iex_data.py    # Python module for IEX data handling
+    │   └── 📄 weather_data.py# Python module for weather data handling
+    ├── 📁 feature_engineering # Feature engineering module
+    │   ├── 📂 __pycache__    # Compiled Python files (ignored)
+    │   └── 📄 build_features.py # Python module for building features
+    └── 📁 model_building      # Model building module
+        ├── 📂 __pycache__    # Compiled Python files (ignored)
+        ├── 📄 eval_model.py  # Python module for model evaluation
+        └── 📄 train_model.py # Python module for model training
+
 
 ## Training Models
 
