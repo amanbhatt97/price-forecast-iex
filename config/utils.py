@@ -6,6 +6,7 @@ Author: Aman Bhatt
 
 import os, time, sys
 import pandas as pd
+import numpy as np
 from datetime import timedelta
 
 # Set the timezone to Asia/Calcutta
@@ -40,3 +41,29 @@ def get_datetime_variables(data_type):
     end_date_str = end_date.strftime("%d-%m-%Y")
 
     return start_date, end_date, start_date_str, end_date_str, data_historical
+
+
+def shift_date(df, n):
+    """ This method shifts dataframe df by n days downwards"""
+    shifted_df = df.copy()
+    try:
+        shifted_df['datetime'] = shifted_df['datetime'] + pd.DateOffset(days=n)
+    except:
+        shifted_df['date'] = shifted_df['date'] + pd.DateOffset(days=n) 
+
+    return shifted_df
+
+
+# capping conditions
+def capping(data):
+    conditions = [
+        (data['datetime'] <= '2022-04-02 23:45:00'),     # Up to 02-04-2022 23:45:00
+        (data['datetime'] <= '2023-04-03 23:45:00'),     # From 02-04-2022 23:45:01 to 03-04-2023 23:45:00
+        (data['datetime'] > '2023-04-03 23:45:00')       # After 03-04-2023 23:45:00
+        # add more cappings if there in future
+    ]
+
+    # corresponding capping values
+    capping_values = [20000, 12000, 10000]
+    data['capping'] = np.select(conditions, capping_values)
+    return data
