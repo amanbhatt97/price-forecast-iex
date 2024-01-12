@@ -64,7 +64,7 @@ The project is structured to facilitate both the training of models and the fore
 The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. 
 
 * [config/](./config)
-  * [locations.yaml](./config/locations.yaml):  Configuration file containing information about weather locations.
+  * [locations.yaml](./config/locations.yaml):  
   * [paths.py](./config/paths.py)
   * [utils.py](./config/utils.py)
 * [data/](./data)
@@ -75,8 +75,6 @@ The repository is organized into distinct modules to handle data processing, fea
   * [dam_train.py](./deploy/dam_train.py)
 * [env/](./env)
 * [forecasts/](./forecasts)
-  * [day_ahead/](./forecasts/day_ahead)
-  * [directional/](./forecasts/directional)
 * [logs/](./logs)
 * [models/](./models)
 * [notebooks/](./notebooks)
@@ -84,6 +82,8 @@ The repository is organized into distinct modules to handle data processing, fea
 * [reports/](./reports)
 * [src/](./src)
   * [data_ingestion/](./src/data_ingestion)
+    * [iex_data.py](./src/data_ingestion/iex_data.py)
+    * [weather_data.py](./src/data_ingestion/weather_data.py)
   * [feature_engineering/](./src/feature_engineering)
   * [model_building/](./src/model_building)
 * [.env](./.env)
