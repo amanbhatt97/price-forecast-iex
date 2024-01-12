@@ -50,10 +50,9 @@ class IexDataFetcher:
             data_dict = self._get_market_data(start_date_str, end_date_str, token, data_type)
             raw_data = pd.DataFrame(data_dict['data'])
             if raw_data.empty:
-                print('Data is already updated up to: ', data_historical['datetime'].iloc[-1])
+                print(f'{data_type} data is already updated up to: ', data_historical['datetime'].iloc[-1])
                 return pd.DataFrame()
             else:
-                print('Data updated up to: ', raw_data['date'].iloc[-1])
                 raw_data.to_pickle(os.path.join(raw_data_path, f'{data_type}'))
                 return raw_data
         except Exception as e:
@@ -87,6 +86,9 @@ class IexDataFetcher:
                 # merging with historical data
                 dam = pd.concat([data_historical, current_dam]).reset_index(drop=True)
 
+                last_date = dam['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
+                print(f'{data_type} data updated up to: ', last_date)
+                
                 # saving data
                 dam.to_pickle(os.path.join(processed_data_path, f'{data_type}_data'))
 
@@ -117,9 +119,12 @@ class IexDataFetcher:
                 processed_data.to_pickle(os.path.join(processed_data_path, f'{data_type}_data'))
 
                 last_date = processed_data['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
+                print(f'{data_type} data updated up to: ', last_date)
                 return processed_data
             
             else:
+                last_date = data_historical['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
+                print('RTM data already updated up to: ', last_date) 
                 return data_historical 
             
         else:
