@@ -15,6 +15,7 @@ __pycache__/
 # Logs and Temporary Files
 logs/
 *.log
+.DS_Store
 
 # Generated Files or Directories
 data/
