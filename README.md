@@ -63,8 +63,6 @@ The project is structured to facilitate both the training of models and the fore
 
 The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. 
 
-# price-forecast-iex
-
 * [config/](./config)
   * [locations.yaml](./config/locations.yaml)
   * [paths.py](./config/paths.py)
