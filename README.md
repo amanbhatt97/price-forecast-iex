@@ -14,12 +14,10 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
   - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Features](#features)
-- [Training Models](#training-models)
-- [Forecasting](#forecasting)
-- [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
+- [Portfolio](#portfolio)
+- [Contact](#contact)
 
 ## Getting Started
 
