@@ -64,42 +64,42 @@ The project is structured to facilitate both the training of models and the fore
 The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. 
 
 Price-Forecast-IEX
-├── LICENSE
-├── README.md
-├── config
-│   ├── __pycache__
-│   ├── locations.yaml
-│   ├── paths.py
-│   └── utils.py
-├── data
-│   ├── external
-│   ├── processed
-│   └── raw
-├── deploy
-│   └── dam_train.py
-├── env
-├── forecasts
-│   ├── day_ahead
-│   └── directional
-├── logs
-├── models
-├── notebooks
-│   └── dam_train.ipynb
-├── reports
-│   ├── day_ahead
-│   └── directional
-└── src
-    ├── data_ingestion
-    │   ├── __pycache__
-    │   ├── iex_data.py
-    │   └── weather_data.py
-    ├── feature_engineering
-    │   ├── __pycache__
-    │   └── build_features.py
-    └── model_building
-        ├── __pycache__
-        ├── eval_model.py
-        └── train_model.py
+|-- LICENSE
+|-- README.md
+|-- config
+|   |-- __pycache__
+|   |-- locations.yaml
+|   |-- paths.py
+|   `-- utils.py
+|-- data
+|   |-- external
+|   |-- processed
+|   `-- raw
+|-- deploy
+|   `-- dam_train.py
+|-- env
+|-- forecasts
+|   |-- day_ahead
+|   `-- directional
+|-- logs
+|-- models
+|-- notebooks
+|   `-- dam_train.ipynb
+|-- reports
+|   |-- day_ahead
+|   `-- directional
+`-- src
+    |-- data_ingestion
+    |   |-- __pycache__
+    |   |-- iex_data.py
+    |   `-- weather_data.py
+    |-- feature_engineering
+    |   |-- __pycache__
+    |   `-- build_features.py
+    `-- model_building
+        |-- __pycache__
+        |-- eval_model.py
+        `-- train_model.py
 
 ## Training Models
 
