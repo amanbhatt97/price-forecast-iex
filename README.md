@@ -63,49 +63,35 @@ The project is structured to facilitate both the training of models and the fore
 
 The repository is organized into distinct modules to handle data processing, feature engineering, model training, and forecasting. 
 
-- **LICENSE:** The license file outlining the terms and conditions for using the project.
+# price-forecast-iex
 
-- **README.md:** The main documentation file providing an overview and instructions for the project.
-
-- **config:**
-  - **locations.yaml:** YAML file containing location-related configurations for weather and power stations data.
-  - **paths.py:** Python file with path-related configurations.
-  - **utils.py:** Python file containing utility functions.
-
-- **data:**
-  - **external:** External data used in the project.
-  - **processed:** Processed data generated after data manipulation.
-  - **raw:** Raw, unprocessed data.
-
-- **deploy:**
-  - **dam_train.py:** Python script for deploying the DAM (Day-Ahead Market) training process.
-
-- **env:** Virtual environment folder for Python.
-
-- **forecasts:**
-  - **day_ahead:** Folder for storing day-ahead forecasts.
-  - **directional:** Folder for storing directional forecasts.
-
-- **logs:** Logs generated during the project.
-
-- **models:** Storage for trained machine learning models.
-
-- **notebooks:**  Jupyter notebooks for testing and analysis
-  - **dam_train.ipynb:** 
-
-- **reports:**
-  - **day_ahead:** Reports related to day-ahead forecasts.
-  - **directional:** Reports related to directional forecasts.
-
-- **src:**
-  - **data_ingestion:**
-    - **iex_data.py:** Python script for ingesting IEX data.
-    - **weather_data.py:** Python script for ingesting weather data.
-  - **feature_engineering:**
-    - **build_features.py:** Python script for building features.
-  - **model_building:**
-    - **eval_model.py:** Python script for model evaluation.
-    - **train_model.py:** Python script for model training.
+* [config/](./price-forecast-iex/config)
+  * [locations.yaml](./price-forecast-iex/config/locations.yaml)
+  * [paths.py](./price-forecast-iex/config/paths.py)
+  * [utils.py](./price-forecast-iex/config/utils.py)
+* [data/](./price-forecast-iex/data)
+  * [external/](./price-forecast-iex/data/external)
+  * [processed/](./price-forecast-iex/data/processed)
+  * [raw/](./price-forecast-iex/data/raw)
+* [deploy/](./price-forecast-iex/deploy)
+  * [dam_train.py](./price-forecast-iex/deploy/dam_train.py)
+* [env/](./price-forecast-iex/env)
+* [forecasts/](./price-forecast-iex/forecasts)
+  * [day_ahead/](./price-forecast-iex/forecasts/day_ahead)
+  * [directional/](./price-forecast-iex/forecasts/directional)
+* [logs/](./price-forecast-iex/logs)
+* [models/](./price-forecast-iex/models)
+* [notebooks/](./price-forecast-iex/notebooks)
+  * [dam_train.ipynb](./price-forecast-iex/notebooks/dam_train.ipynb)
+* [reports/](./price-forecast-iex/reports)
+* [src/](./price-forecast-iex/src)
+  * [data_ingestion/](./price-forecast-iex/src/data_ingestion)
+  * [feature_engineering/](./price-forecast-iex/src/feature_engineering)
+  * [model_building/](./price-forecast-iex/src/model_building)
+* [.env](./price-forecast-iex/.env)
+* [.gitignore](./price-forecast-iex/.gitignore)
+* [LICENSE](./price-forecast-iex/LICENSE)
+* [README.md](./price-forecast-iex/README.md)
 
 
 ## Training Models
