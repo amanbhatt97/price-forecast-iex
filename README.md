@@ -52,5 +52,5 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 
 4. Install Dependencies:
 
-   '''bash
+   ```bash
    pip install -r requirements.txt
