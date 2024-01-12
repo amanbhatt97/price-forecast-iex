@@ -6,7 +6,9 @@ from sklearn.metrics import mean_absolute_percentage_error
 ROOT_PATH = os.getenv('ROOT_PATH')
 sys.path.append(ROOT_PATH)
 
-from config.utils import shift_date
+from src.feature_engineering.build_features import FeatureEngineering
+featured_data = FeatureEngineering(ROOT_PATH) 
+
 
 class ModelEvaluator:
     def __init__(self, model, best_features):
@@ -16,7 +18,7 @@ class ModelEvaluator:
     def _process_results(self, predictions_df):
         results = predictions_df.reset_index()
         results['prediction'] = results['prediction'].apply(lambda x: 10000 if x > 9000 else x)
-        results = shift_date(results, 1)
+        results = featured_data.shift_date(results, 1)
         results['date'] = results['datetime'].dt.date
         results['mae'] = np.abs(results['target'] - results['prediction'])
         return results
