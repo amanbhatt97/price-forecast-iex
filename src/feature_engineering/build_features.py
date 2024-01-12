@@ -1,14 +1,32 @@
 # dependencies
 import pandas as pd
 import numpy as np
-import sys, os
 import math
+from functools import reduce
 
 
 class FeatureEngineering:
     def __init__(self, ROOT_PATH):
         self.ROOT_PATH = ROOT_PATH
 
+
+    def shift_date(self, df, n):
+        """ This method shifts dataframe df by n days downwards"""
+        shifted_df = df.copy()
+        try:
+            shifted_df['datetime'] = shifted_df['datetime'] + pd.DateOffset(days=n)
+        except:
+            shifted_df['date'] = shifted_df['date'] + pd.DateOffset(days=n) 
+
+        return shifted_df
+
+
+    def merge_dataframes(self, dfs, on_column='datetime'):
+        """This method merges all the dataframes in a list dfs"""
+        merged_df = reduce(lambda left, right: pd.merge(left, right, on=on_column, how='left'), dfs)
+        merged_df.dropna(inplace=True)
+        return merged_df
+    
 
     def _capping(self, data):
         conditions = [
