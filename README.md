@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Price Forecast IEX** project is designed to forecast energy prices, utilizing data from the IEX (Indian Energy Exchange). The project focuses on day-ahead and real-time market forecasts, employing machine learning techniques for accurate predictions.
+The **Price Forecast IEX** project is designed to forecast energy prices, utilizing data from the IEX (Indian Energy Exchange), weather data and power satations data from different locations. The project focuses on day-ahead and real-time market forecasts, employing machine learning techniques for accurate predictions.
 
 ## Table of Contents
 
