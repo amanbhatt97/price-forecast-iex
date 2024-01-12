@@ -16,7 +16,7 @@ api_key = os.getenv('meteoblue_api_key')
 ROOT_PATH = os.getenv('ROOT_PATH')
 sys.path.append(ROOT_PATH)
 
-from config.utils import *
+from config.paths import raw_data_path, processed_data_path
 
 
 class WeatherDataFetcher:
