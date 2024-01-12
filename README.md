@@ -25,8 +25,8 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 
 ### Prerequisites
 
-- Python 3.x
-- Required Python packages (specified in requirements.txt or setup.py)
+- Python 3
+- Required Python packages (specified in requirements.txt)
 
 ### Installation
 
@@ -35,3 +35,8 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
    ```bash
    git clone https://github.com/your-username/price-forecast-iex.git
    cd price-forecast-iex
+
+2. Create a Virtual Environment (Optional but Recommended):
+
+   ```bash
+   python3 -m venv {environment_name} 
