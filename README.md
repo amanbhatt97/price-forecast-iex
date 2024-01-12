@@ -91,23 +91,6 @@ The repository is organized into distinct modules to handle data processing, fea
 * [LICENSE](./LICENSE)
 * [README.md](./README.md)
 
-
-## Training Models
-
-To train models for day-ahead and directional forecasts, follow the steps outlined in the 'Training Models' section of the documentation. Ensure that the required dependencies are installed in your virtual environment.
-
-## Forecasting
-
-Forecasting day-ahead and directional predictions is made straightforward with the 'Forecasting' section. The provided scripts enable users to generate forecasts based on the trained models.
-
-## Accuracy Evaluation
-
-Evaluate the accuracy of the forecasts using the relevant metrics outlined in the 'Accuracy Evaluation' section. This step is crucial for assessing the reliability of the models.
-
-## Contributing
-
-If you would like to contribute to this project, please follow the guidelines in the 'Contributing' section.
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
