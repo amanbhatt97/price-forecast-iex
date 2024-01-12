@@ -98,3 +98,14 @@ This project is licensed under the [MIT License](LICENSE).
 ## Acknowledgments
 
 We acknowledge the use of data from the Indian Energy Exchange (IEX) and appreciate the efforts of contributors to open-source libraries and tools used in this project.
+
+## Portfolio
+
+Check out my portfolio [here](https://amanbhatt97.github.io/portfolio/).
+
+## Contact
+
+Feel free to reach out to me if you have any questions or feedback. You can find me on:
+
+- Email: amanbhatt.1997.ab@gmail.com
+- LinkedIn: [amanbhatt97](https://www.linkedin.com/in/amanbhatt1997/)
