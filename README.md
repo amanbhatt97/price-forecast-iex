@@ -101,8 +101,6 @@ Price-Forecast-IEX
         ├── eval_model.py
         └── train_model.py
 
-
-
 ## Training Models
 
 To train models for day-ahead and directional forecasts, follow the steps outlined in the 'Training Models' section of the documentation. Ensure that the required dependencies are installed in your virtual environment.
