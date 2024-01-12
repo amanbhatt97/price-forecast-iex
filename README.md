@@ -54,3 +54,8 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 
    ```bash
    pip install -r requirements.txt
+
+### Usage
+
+   The project is structured to facilitate both the training of models and the forecasting process. Detailed instructions for training and forecasting can be found in the respective sections below.
+
