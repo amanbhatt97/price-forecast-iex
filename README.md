@@ -30,7 +30,7 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
       ```bash
       conda create --name {env_name} --file requirements.txt
       
-   OR Alternatively Create Virtual Environment using venv:
+  OR Alternatively Create Virtual Environment using venv:
 
       ```bash
       Create Environment:
