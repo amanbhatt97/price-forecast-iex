@@ -7,10 +7,11 @@ Author: Aman Bhatt
 from pathlib import Path
 import sys, os
 
-# Parent directory
-script_dir = Path(__file__).resolve().parent
-project_dir = script_dir.parent
-sys.path.append(project_dir)  # Add the parent directory to the system path
+from dotenv import load_dotenv
+load_dotenv()
+
+PROJECT_PATH = os.getenv('PROJECT_DIR')
+sys.path.append(PROJECT_PATH)
 
 
 class ProjectPaths:
@@ -39,6 +40,7 @@ class ProjectPaths:
         # Create directories if they do not exist
         self._create_directories()
 
+
     def _create_directories(self):
         """
         Create necessary directories if they do not exist.
@@ -54,20 +56,9 @@ class ProjectPaths:
 
 
 # Create an instance of the ProjectPaths class
-project_paths = ProjectPaths(project_dir)
+project_paths = ProjectPaths(PROJECT_PATH)
 
 # Data path
 raw_data_path = str(project_paths.data / 'raw')
 processed_data_path = str(project_paths.data / 'processed')
 external_data_path = str(project_paths.data / 'external')
-
-# # Logs path
-# log_path = project_paths.logs
-
-# # Forecast paths
-# dam_forecast_path = project_paths.forecasts_dam
-# dir_forecast_path = project_paths.forecasts_dir
-
-# # Accuracy reports path
-# dam_reports_path = project_paths.reports_dam
-# dir_reports_path = project_paths.reports_dir
