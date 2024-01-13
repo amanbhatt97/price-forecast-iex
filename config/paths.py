@@ -55,10 +55,12 @@ class ProjectPaths:
             os.makedirs(directory, exist_ok=True)
 
 
-# Create an instance of the ProjectPaths class
+# create an instance of the ProjectPaths class
 project_paths = ProjectPaths(PROJECT_PATH)
 
-# Data path
+# data path
 raw_data_path = os.path.join(project_paths.data, 'raw')
 processed_data_path = os.path.join(project_paths.data, 'processed')
 external_data_path = os.path.join(project_paths.data, 'external')
+
+models_path = os.path.join(PROJECT_PATH, 'models') 
