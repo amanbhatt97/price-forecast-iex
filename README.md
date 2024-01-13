@@ -9,9 +9,7 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 - [Introduction](#price-forecast-iex)
 - [Overview](#overview)
 - [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+- [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [License](#license)
@@ -19,14 +17,7 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 - [Portfolio](#portfolio)
 - [Contact](#contact)
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3
-- Required Python packages (specified in requirements.txt)
-
-### Installation
+## Installation
 
 1. Clone the repository:
 
