@@ -205,10 +205,6 @@ class FeatureEngineering:
         for i in weather.columns[1:65]:
             data[f'mcp_{data_type}_with_{i}'] = data[f'mcp_{data_type}'] * data[i]
         return data
-    
-
-    def _save_features(self, data, location):
-        data.to_pickle(location)
 
 
     def _get_features(self, data, weather, data_type):
