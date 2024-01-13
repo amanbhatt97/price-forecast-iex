@@ -23,8 +23,8 @@ class WeatherDataFetcher:
     def __init__(self):
         # Access credentials
         self.api_key = os.getenv('meteoblue_api_key')
-        self.ROOT_PATH = os.getenv('ROOT_PATH')
-        sys.path.append(self.ROOT_PATH)
+        self.PROJECT_PATH = os.getenv('PROJECT_DIR')
+        sys.path.append(self.PROJECT_PATH)
 
     def _get_weather_response(self, lat, lon, asl, name):
         try:
@@ -93,7 +93,7 @@ class WeatherDataFetcher:
 
     def _get_processed_weather(self, location_type):
         # Load weather locations from YAML file
-        locations = self._load_locations(os.path.join(self.ROOT_PATH, 'config', 'locations.yaml'), location_type)
+        locations = self._load_locations(os.path.join(self.PROJECT_PATH, 'config', 'locations.yaml'), location_type)
 
         # Get required features based on location type
         required_features = locations['required_features']
@@ -105,5 +105,5 @@ class WeatherDataFetcher:
         data_historical = data_historical[data_historical['datetime'] < start_date]
         final_df = pd.concat([data_historical, raw_df]).reset_index(drop=True)
         final_df.to_pickle(os.path.join(processed_data_path, f'{location_type}_data'))
-
+        print(f'{location_type} data updated.')
         return final_df
