@@ -34,7 +34,7 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 
       ```bash
       Create Environment:
-         python3 -m venv env
+         python3 -m venv {env_name}
    
       Activate the virtual environment:
          # On Windows
