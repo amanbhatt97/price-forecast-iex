@@ -1,5 +1,5 @@
 # Virtual Environment
-env/
+test_env/
 
 # Python Compiled Files
 __pycache__/
