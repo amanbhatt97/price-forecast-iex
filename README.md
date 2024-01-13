@@ -25,26 +25,23 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
    git clone https://github.com/your-username/price-forecast-iex.git
    cd price-forecast-iex
 
-2. Create a Virtual Environment (Optional but Recommended):
+2. Create a Virtual Environment using venv:
 
       ```bash
-      python3 -m venv env
+      Create Environment:
+         python3 -m venv env
    
-   3. Activate the virtual environment:
+      Activate the virtual environment:
+         # On Windows
+         .\venv\Scripts\activate
+      
+         # On macOS/Linux
+         source venv/bin/activate  
    
-      ```bash
-      # On Windows
-      .\venv\Scripts\activate
-   
-      # On macOS/Linux
-      source venv/bin/activate  
-   
-   4. Install Dependencies:
-   
-      ```bash
-      pip install -r requirements.txt
+      Install Dependencies:
+         pip install -r requirements.txt
 
-2. Create Virtual Environment and Install Dependencies:
+2. Create Virtual Environment using conda and Install Dependencies:
 
    ```bash
    conda create --name {env_name} --file requirements.txt
