@@ -12,10 +12,11 @@ __pycache__/
 .idea/
 *.pyc
 
-# Logs and Temporary Files
+# Logs, Models Temporary Files
 logs/
 *.log
 .DS_Store
+models/
 
 # Generated Files or Directories
 data/
