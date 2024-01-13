@@ -27,7 +27,7 @@ class ModelEvaluator:
         results.tail(96 * n).set_index('datetime')[['target', 'prediction']].plot()
 
     def _calculate_mape(self, results):
-        mape = round(mean_absolute_percentage_error(results['target'], results['prediction']), 4) * 100
+        mape = round(mean_absolute_percentage_error(results['target'], results['prediction']), 2) * 100
         print(f'MAPE: {mape}')
 
     def evaluate_on_data(self, X, y, dataset_name, n):
