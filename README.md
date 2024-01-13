@@ -28,20 +28,20 @@ The **Price Forecast IEX** project is designed to forecast energy prices, utiliz
 2. Create Virtual Environment using conda and Install Dependencies:
 
       ```bash
-      conda create --name `env_name` --file requirements.txt
+      conda create --name test_env --file requirements.txt
       
   OR Alternatively Create Virtual Environment using venv:
 
       ```bash
       Create Environment:
-         python3 -m venv `env_name`
+         python3 -m venv test_env
    
       Activate the virtual environment:
          # On Windows
-         .\`env_name`\Scripts\activate
+         .\test_env\Scripts\activate
       
          # On macOS/Linux
-         source `env_name`/bin/activate  
+         source test_env/bin/activate  
    
       Install Dependencies:
          pip install -r requirements.txt 
