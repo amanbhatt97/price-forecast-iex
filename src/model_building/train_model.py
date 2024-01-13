@@ -8,8 +8,8 @@ from sklearn.metrics import mean_absolute_percentage_error
 
 class ModelTraining:
 
-    def __init__(self, ROOT_PATH):
-        self.ROOT_PATH = ROOT_PATH
+    def __init__(self, PROJECT_PATH):
+        self.PROJECT_PATH = PROJECT_PATH
 
     def _split_data(self, data, training_cutoff, validation_cutoff):
         # Training set
@@ -116,6 +116,6 @@ class ModelTraining:
     
 
     def _save_model(self, model, model_type):
-        model_path = os.path.join(self.ROOT_PATH, 'models', f'{model_type}_model')
+        model_path = os.path.join(self.PROJECT_PATH, 'models', f'{model_type}_model')
         with open(model_path, 'wb') as model_file:
             pickle.dump(model, model_file)
