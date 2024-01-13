@@ -26,16 +26,16 @@ class ProjectPaths:
         self.parent_directory = parent_directory
 
         # Define paths for various directories
-        self.data = parent_directory / 'data'  # Store data
-        self.src = parent_directory / 'src'  # Source scripts
-        self.deploy = parent_directory / 'deploy'  # Forecasting/reports scripts
-        self.config = parent_directory / 'config'  # Configuration files
-        self.logs = parent_directory / 'logs'       # Logs
-        self.models = parent_directory / 'models'   # saved models 
-        self.forecasts_dam = parent_directory / 'forecasts' / 'day_ahead'  # DAM forecast files
-        self.forecasts_dir = parent_directory / 'forecasts' / 'directional'  # Directional forecast files
-        self.reports_dam = parent_directory / 'reports' / 'day_ahead'  # DAM reports
-        self.reports_dir = parent_directory / 'reports' / 'directional'  # Directional reports
+        self.data = os.path.join(parent_directory, 'data')  # Store data
+        self.src = os.path.join(parent_directory, 'src')  # Source scripts
+        self.deploy = os.path.join(parent_directory, 'deploy')  # Forecasting/reports scripts
+        self.config = os.path.join(parent_directory, 'config')  # Configuration files
+        self.logs = os.path.join(parent_directory, 'logs')       # Logs
+        self.models = os.path.join(parent_directory, 'models')   # saved models 
+        self.forecasts_dam = os.path.join(parent_directory, 'forecasts', 'day_ahead')  # DAM forecast files
+        self.forecasts_dir = os.path.join(parent_directory, 'forecasts', 'directional')  # Directional forecast files
+        self.reports_dam = os.path.join(parent_directory, 'reports', 'day_ahead')  # DAM reports
+        self.reports_dir = os.path.join(parent_directory, 'reports', 'directional')  # Directional reports
 
         # Create directories if they do not exist
         self._create_directories()
@@ -52,13 +52,13 @@ class ProjectPaths:
 
         # Create directories if they do not exist
         for directory in directories:
-            directory.mkdir(parents=True, exist_ok=True)
+            os.makedirs(directory, exist_ok=True)
 
 
 # Create an instance of the ProjectPaths class
 project_paths = ProjectPaths(PROJECT_PATH)
 
 # Data path
-raw_data_path = str(project_paths.data / 'raw')
-processed_data_path = str(project_paths.data / 'processed')
-external_data_path = str(project_paths.data / 'external')
+raw_data_path = os.path.join(project_paths.data, 'raw')
+processed_data_path = os.path.join(project_paths.data, 'processed')
+external_data_path = os.path.join(project_paths.data, 'external')
