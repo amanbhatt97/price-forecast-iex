@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Parent directory
-ROOT_PATH = os.getenv('ROOT_PATH')
-sys.path.append(ROOT_PATH)
+PROJECT_PATH = os.getenv('PROJECT_DIR')
+sys.path.append(PROJECT_PATH)
 
 # Custom modules
 from config.paths import *
