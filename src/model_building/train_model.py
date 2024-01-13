@@ -72,18 +72,13 @@ class ModelTraining:
                 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, step=0.01),
                 }
         
-            # Initialize and train the LightGBM model
             model = lgb.LGBMRegressor(**param)
             model.fit(
                 X_train[best_features], y_train,
                 eval_set=[(X_valid[best_features], y_valid)],
                 early_stopping_rounds=10, eval_metric='mape', verbose=False
             )
-            
-            # Make predictions on the validation set
             preds = model.predict(X_valid[best_features])
-            
-            # Calculate mean absolute percentage error (MAPE)
             error = round(mean_absolute_percentage_error(y_valid, preds) * 100, 2)
         
             return error
@@ -101,21 +96,9 @@ class ModelTraining:
         return best_features, best_params
 
 
-    def _train_model(self, X_train, y_train, best_params, best_features, objective, model_type, alpha = None):
-
-        # model training with best parameters
+    def _train_model(self, X_train, y_train, best_params, best_features, objective, alpha = None):
         model = lgb.LGBMRegressor(objective = objective, **best_params, alpha = alpha)
-
-        # fitting the model with best features
         model.fit(X_train[best_features], y_train, 
                 verbose = -1
                 )
-        
-        self._save_model(model, model_type)
         return model
-    
-
-    def _save_model(self, model, model_type):
-        model_path = os.path.join(self.PROJECT_PATH, 'models', f'{model_type}_model')
-        with open(model_path, 'wb') as model_file:
-            pickle.dump(model, model_file)
