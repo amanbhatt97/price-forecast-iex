@@ -13,8 +13,8 @@ load_dotenv()
 # Access credentials
 api_key = os.getenv('meteoblue_api_key')
 
-ROOT_PATH = os.getenv('ROOT_PATH')
-sys.path.append(ROOT_PATH)
+PROJECT_PATH = os.getenv('PROJECT_DIR')
+sys.path.append(PROJECT_PATH)
 
 from config.paths import raw_data_path, processed_data_path
 

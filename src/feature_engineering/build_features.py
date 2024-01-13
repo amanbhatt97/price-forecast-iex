@@ -6,8 +6,8 @@ from functools import reduce
 
 
 class FeatureEngineering:
-    def __init__(self, ROOT_PATH):
-        self.ROOT_PATH = ROOT_PATH
+    def __init__(self, PROJECT_PATH):
+        self.PROJECT_PATH = PROJECT_PATH
 
 
     def shift_date(self, df, n):

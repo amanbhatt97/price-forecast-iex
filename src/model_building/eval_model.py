@@ -3,11 +3,11 @@ import numpy as np
 import os, sys
 from sklearn.metrics import mean_absolute_percentage_error
 
-ROOT_PATH = os.getenv('ROOT_PATH')
-sys.path.append(ROOT_PATH)
+PROJECT_PATH = os.getenv('PROJECT_DIR')
+sys.path.append(PROJECT_PATH)
 
 from src.feature_engineering.build_features import FeatureEngineering
-featured_data = FeatureEngineering(ROOT_PATH) 
+featured_data = FeatureEngineering(PROJECT_PATH) 
 
 
 class ModelEvaluator:
