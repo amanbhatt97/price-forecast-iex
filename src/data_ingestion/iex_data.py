@@ -51,10 +51,10 @@ class IexDataFetcher:
             start_date_str (str): Start date string.
             end_date_str (str): End date string.
             token (str): Access token.
-            market_type (str): Type of market data ('DAM' or 'RTM').
+            market_type (str): Type of market data ('dam' or 'rtm').
         """
         try:
-            endpoint = 'getMarketVolume' if market_type == 'DAM' else 'getRTMMarketVolume'
+            endpoint = 'getMarketVolume' if market_type == 'dam' else 'getRTMMarketVolume'
             url = self.base_url + endpoint
             headers = {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}
             params = {"start_date": start_date_str, "end_date": end_date_str}
@@ -74,11 +74,8 @@ class IexDataFetcher:
             Tuple: Tuple containing start date, end date, start date string,
                    end date string, and historical data.
         """
-        data_historical = pd.read_pickle(os.path.join(PROCESSED_DATA_PATH, f'{market_type}_data'))
-        if market_type == 'dam':
-            start_date = data_historical['datetime'].iloc[-1] + timedelta(days=1)
-        elif market_type == 'rtm':
-            start_date = data_historical['datetime'].iloc[-1] + timedelta(hours=0.25)
+        data_historical = load_pickle(PROCESSED_DATA_PATH, f'{market_type}_data')
+        start_date = data_historical['datetime'].iloc[-1] + timedelta(hours=0.25)
         end_date = start_date + timedelta(days=30)
         start_date_str = start_date.strftime("%d-%m-%Y")
         end_date_str = end_date.strftime("%d-%m-%Y")
@@ -137,6 +134,7 @@ class IexDataFetcher:
                 last_date = processed_data['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
                 print(f'{market_type} data updated up to: ', last_date)
                 save_pickle(processed_data, PROCESSED_DATA_PATH, f'{market_type}_data')
+                return processed_data
             else:
                 return data_historical
 
