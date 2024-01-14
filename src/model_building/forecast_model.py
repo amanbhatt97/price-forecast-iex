@@ -62,11 +62,12 @@ class ModelForecaster:
             'upper': upper_pred
         })
 
+        result = self._create_daterange(forecast_date, result)
+        result = self.modify_forecast(result, forecast_date)  
         result = np.round(result, 1)
         return result
 
-    @staticmethod
-    def forecasting_date(df, market_type):
+    def forecasting_date(self, df, market_type):
         """
         Calculate the next date for forecasting based on the last datetime in the DataFrame.
 
@@ -80,3 +81,41 @@ class ModelForecaster:
         days_to_add = 1 if market_type.lower() == 'dam' else 2
         forecasting_date = (last_datetime + pd.DateOffset(days=days_to_add)).strftime('%Y-%m-%d')
         return forecasting_date
+    
+    def modify_forecast(self, forecast_df, forecast_date):
+        """
+        Modify forecast values and bounds.
+
+        Args:
+            forecast_df (pd.DataFrame): DataFrame with forecast values and bounds.
+            forecast_date (str): Date for which the forecast needs to be modified (format: 'YYYY-MM-DD').
+
+        Returns:
+            pd.DataFrame: Modified forecast values along with lower and upper bounds.
+        """
+        forecasts = forecast_df.rename(columns = {'forecast': f'forecast_{forecast_date}',
+                                                    'lower': 'lower_bound',
+                                                    'upper': 'upper_bound'
+                                                    }
+                                        )
+
+        # masking forecast values above 8500 to 10000
+        forecasts[f'forecast_{forecast_date}'] = forecasts[f'forecast_{forecast_date}'].apply(lambda x: 10000 if x > 9000 else x)
+
+        # making lower bound < forecast < upper_bound
+        forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast_{forecast_date}']), axis=1)
+        forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast_{forecast_date}']), axis=1)
+
+        # masking upper bound values above 8500 to 10000
+        forecasts['upper_bound'] = forecasts['upper_bound'].apply(lambda x: 10000 if x > 8500 else x)
+
+        forecasts = forecasts[['datetime', f'forecast_{forecast_date}', 'lower_bound', 'upper_bound']]
+        forecasts = forecasts.round(2)
+
+        forecasts.set_index('datetime').plot()
+        return forecasts
+
+    def _create_daterange(self, forecast_date, forecast):
+        q = pd.DataFrame(pd.date_range(start = forecast_date, periods = 96, freq = '15min'), columns = ['datetime'])
+        forecast = pd.concat([q,forecast],axis = 1)
+        return forecast
