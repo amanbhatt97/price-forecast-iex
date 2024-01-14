@@ -62,6 +62,7 @@ The repository is organized into distinct modules to handle data processing, fea
   * [external/](./data/external)
   * [processed/](./data/processed)
   * [raw/](./data/raw)
+* [docs/](./docs)
 * [deploy/](./deploy)
   * [dam_train.py](./deploy/dam_train.py)
 * [env/](./env)
