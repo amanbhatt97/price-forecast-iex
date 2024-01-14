@@ -62,7 +62,7 @@ wind = featured_data.shift_date(wind, -1)
 data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
 
 # Get features for training data
-training_data = featured_data._get_features(data, weather, data_type='dam')
+training_data = featured_data._get_features(data, weather, market_type='dam')
 save_pickle(training_data, PROCESSED_DATA_PATH, 'training_data')
 
 # Load training data

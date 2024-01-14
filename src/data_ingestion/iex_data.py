@@ -63,65 +63,65 @@ class IexDataFetcher:
         except Exception as e:
             print("Error occurred while retrieving data:", str(e))
 
-    def _get_datetime_variables(self, data_type):
+    def _get_datetime_variables(self, market_type):
         """
         Gets datetime variables for fetching market data.
         
         Args:
-            data_type (str): Type of market data ('DAM' or 'RTM').
+            market_type (str): Type of market data ('DAM' or 'RTM').
             
         Returns:
             Tuple: Tuple containing start date, end date, start date string,
                    end date string, and historical data.
         """
-        data_historical = pd.read_pickle(os.path.join(PROCESSED_DATA_PATH, f'{data_type}_data'))
-        if data_type == 'dam':
+        data_historical = pd.read_pickle(os.path.join(PROCESSED_DATA_PATH, f'{market_type}_data'))
+        if market_type == 'dam':
             start_date = data_historical['datetime'].iloc[-1] + timedelta(days=1)
-        elif data_type == 'rtm':
+        elif market_type == 'rtm':
             start_date = data_historical['datetime'].iloc[-1] + timedelta(hours=0.25)
         end_date = start_date + timedelta(days=30)
         start_date_str = start_date.strftime("%d-%m-%Y")
         end_date_str = end_date.strftime("%d-%m-%Y")
         return start_date, end_date, start_date_str, end_date_str, data_historical
 
-    def _get_raw_data(self, data_type):
+    def _get_raw_data(self, market_type):
         """
         Fetches raw market data, processes it, and saves it in pickle files.
         
         Args:
-            data_type (str): Type of market data ('DAM' or 'RTM').
+            market_type (str): Type of market data ('DAM' or 'RTM').
             
         Returns:
             pd.DataFrame: Raw market data.
         """
         try:
             token = self._get_token()
-            start_date, end_date, start_date_str, end_date_str, data_historical = self._get_datetime_variables(data_type)
-            data_dict = self._get_market_data(start_date_str, end_date_str, token, data_type)
+            start_date, end_date, start_date_str, end_date_str, data_historical = self._get_datetime_variables(market_type)
+            data_dict = self._get_market_data(start_date_str, end_date_str, token, market_type)
             raw_data = pd.DataFrame(data_dict['data'])
             if raw_data.empty:
-                print(f'{data_type} data is already updated up to: ', data_historical['datetime'].iloc[-1])
+                print(f'{market_type} data is already updated up to: ', data_historical['datetime'].iloc[-1])
                 return pd.DataFrame()
             else:
-                save_pickle(raw_data, RAW_DATA_PATH, f'{data_type}')
+                save_pickle(raw_data, RAW_DATA_PATH, f'{market_type}')
                 return raw_data
         except Exception as e:
             print("Error in fetching data:", str(e))
     
-    def _get_processed_data(self, data_type):
+    def _get_processed_data(self, market_type):
         """
         Processes raw market data, creates additional features, and saves the results.
         
         Args:
-            data_type (str): Type of market data ('DAM' or 'RTM').
+            market_type (str): Type of market data ('DAM' or 'RTM').
             
         Returns:
             pd.DataFrame: Processed market data.
         """
-        raw_data = self._get_raw_data(data_type)
-        start_date, end_date, start_date_str, end_date_str, data_historical = self._get_datetime_variables(data_type)
+        raw_data = self._get_raw_data(market_type)
+        start_date, end_date, start_date_str, end_date_str, data_historical = self._get_datetime_variables(market_type)
 
-        if data_type == 'dam':
+        if market_type == 'dam':
             # Processing steps for DAM data
             if not raw_data.empty:
                 df = raw_data[['mcp', 'mcv', 'purchase_bid', 'sell_bid']]
@@ -135,12 +135,12 @@ class IexDataFetcher:
                 current_data = pd.concat([current_dates, df], axis=1).dropna()
                 processed_data = pd.concat([data_historical, current_data]).reset_index(drop=True)
                 last_date = processed_data['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
-                print(f'{data_type} data updated up to: ', last_date)
-                save_pickle(processed_data, PROCESSED_DATA_PATH, f'{data_type}_data')
+                print(f'{market_type} data updated up to: ', last_date)
+                save_pickle(processed_data, PROCESSED_DATA_PATH, f'{market_type}_data')
             else:
                 return data_historical
 
-        elif data_type == 'rtm':
+        elif market_type == 'rtm':
             # Processing steps for RTM data
             if not raw_data.empty:
                 df = raw_data.copy()
@@ -154,9 +154,9 @@ class IexDataFetcher:
                 df['diff_sb_pb_rtm'] = df['pb_rtm'] - df['sb_rtm']
                 current_data = df.copy()
                 processed_data = pd.concat([data_historical, current_data]).reset_index(drop=True)
-                save_pickle(processed_data, PROCESSED_DATA_PATH, f'{data_type}_data') 
+                save_pickle(processed_data, PROCESSED_DATA_PATH, f'{market_type}_data') 
                 last_date = processed_data['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')
-                print(f'{data_type} data updated up to: ', last_date)
+                print(f'{market_type} data updated up to: ', last_date)
                 return processed_data
             else:
                 last_date = data_historical['datetime'].iloc[-1].strftime('%d-%m-%Y %H:%M')

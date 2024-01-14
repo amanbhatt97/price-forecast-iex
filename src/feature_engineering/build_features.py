@@ -69,11 +69,11 @@ class FeatureEngineering:
         return data
 
 
-    def _target(self, data, data_type):
-        if data_type == 'dam':
-            data['target'] = data[f'mcp_{data_type}'].shift(-96)
-        elif data_type == 'rtm':
-            data['target'] = data[f'mcp_{data_type}'].shift(-96*2)
+    def _target(self, data, market_type):
+        if market_type == 'dam':
+            data['target'] = data[f'mcp_{market_type}'].shift(-96)
+        elif market_type == 'rtm':
+            data['target'] = data[f'mcp_{market_type}'].shift(-96*2)
         else:
             print('Chose dam or rtm.')
         return data
@@ -117,33 +117,33 @@ class FeatureEngineering:
 
 
     # exponential weighted moving averages
-    def _ema(self, df, data_type):
+    def _ema(self, df, market_type):
         data = df.copy()
         for i in [1,3,6,12]:
-            data[f'ewma_{i}h'] = data[f'mcp_{data_type}'].ewm(span=4*i).mean() 
+            data[f'ewma_{i}h'] = data[f'mcp_{market_type}'].ewm(span=4*i).mean() 
             
         for i in [1,3,5]:
-            data[f'ewma_{i}d'] = data[f'mcp_{data_type}'].ewm(span=96*i).mean()
+            data[f'ewma_{i}d'] = data[f'mcp_{market_type}'].ewm(span=96*i).mean()
         return data
 
 
     # mean
-    def _mean(self, df, data_type):
+    def _mean(self, df, market_type):
         data = df.copy()
         window_sizes = [2, 3, 5]
         for window_size in window_sizes:
-            data[f'mcp_{data_type}_mean_{window_size}d'] = data[f'mcp_{data_type}'].rolling(window_size * 96).mean()
+            data[f'mcp_{market_type}_mean_{window_size}d'] = data[f'mcp_{market_type}'].rolling(window_size * 96).mean()
         return data
 
 
     # interaction with datetime
-    def _interaction(self, df, data_type):
+    def _interaction(self, df, market_type):
         data = df.copy()
-        data[f'mcp_{data_type}_with_dom'] = data[f'mcp_{data_type}'] * data['dom'] 
-        data[f'mcp_{data_type}_with_month'] = data[f'mcp_{data_type}'] * data['month']
-        data[f'mcp_{data_type}_with_dow'] = data[f'mcp_{data_type}'] * data['dow']
-        data[f'mcp_{data_type}_with_doy'] = data[f'mcp_{data_type}'] * data['doy']
-        data[f'mcp_{data_type}_with_tb'] = data[f'mcp_{data_type}'] * data['tb']
+        data[f'mcp_{market_type}_with_dom'] = data[f'mcp_{market_type}'] * data['dom'] 
+        data[f'mcp_{market_type}_with_month'] = data[f'mcp_{market_type}'] * data['month']
+        data[f'mcp_{market_type}_with_dow'] = data[f'mcp_{market_type}'] * data['dow']
+        data[f'mcp_{market_type}_with_doy'] = data[f'mcp_{market_type}'] * data['doy']
+        data[f'mcp_{market_type}_with_tb'] = data[f'mcp_{market_type}'] * data['tb']
         return data
 
 
@@ -168,15 +168,15 @@ class FeatureEngineering:
         return data
 
 
-    def _price_features(self, data, data_type):
+    def _price_features(self, data, market_type):
         data = self._capping(data)
         data = self._datetime_features(data)
-        data = self._target(data, data_type)
+        data = self._target(data, market_type)
         data = self._lags(data)
         data = self._min_max(data)
-        data = self._ema(data, data_type)
-        data = self._mean(data, data_type)
-        data = self._interaction(data, data_type)
+        data = self._ema(data, market_type)
+        data = self._mean(data, market_type)
+        data = self._interaction(data, market_type)
         data = self._cyclic(data, 'tb')
         data = self._cyclic(data, 'hour')
         data = self._cyclic(data, 'dow')
@@ -201,16 +201,16 @@ class FeatureEngineering:
         return data
 
 
-    def _interaction_features(self, data, weather, data_type):
+    def _interaction_features(self, data, weather, market_type):
         for i in weather.columns[1:65]:
-            data[f'mcp_{data_type}_with_{i}'] = data[f'mcp_{data_type}'] * data[i]
+            data[f'mcp_{market_type}_with_{i}'] = data[f'mcp_{market_type}'] * data[i]
         return data
 
 
-    def _get_features(self, data, weather, data_type):
-        data = self._price_features(data, data_type)
+    def _get_features(self, data, weather, market_type):
+        data = self._price_features(data, market_type)
         data = self._weather_features(data, weather)
-        data = self._interaction_features(data, weather, data_type)
+        data = self._interaction_features(data, weather, market_type)
         data = data.drop('date', axis=1)    
         data = data.dropna()
         data = data.reset_index(drop=True)
