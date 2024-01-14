@@ -16,7 +16,7 @@ api_key = os.getenv('meteoblue_api_key')
 PROJECT_PATH = os.getenv('PROJECT_DIR')
 sys.path.append(PROJECT_PATH)
 
-from config.paths import raw_data_path, processed_data_path
+from config.paths import RAW_DATA_PATH, PROCESSED_DATA_PATH
 from src.utils import *
 
 class WeatherDataFetcher:
@@ -60,7 +60,7 @@ class WeatherDataFetcher:
             df = self._preprocess_weather_data(df, required_features, name)
             df_combined = pd.concat([df_combined, df], ignore_index=True)
         df_combined = self._resample_and_interpolate(df_combined)
-        save_pickle(df_combined, raw_data_path, f'{location_type}')
+        save_pickle(df_combined, RAW_DATA_PATH, f'{location_type}')
         return df_combined
 
     def _preprocess_weather_data(self, df, required_features, name):
@@ -101,9 +101,9 @@ class WeatherDataFetcher:
         raw_df = self._fetch_weather_data(locations['locations'], required_features, location_type)
 
         start_date = raw_df['datetime'].iloc[0]
-        data_historical = pd.read_pickle(os.path.join(processed_data_path, f'{location_type}_data'))
+        data_historical = pd.read_pickle(os.path.join(PROCESSED_DATA_PATH, f'{location_type}_data'))
         data_historical = data_historical[data_historical['datetime'] < start_date]
         final_df = pd.concat([data_historical, raw_df]).reset_index(drop=True)
-        save_pickle(final_df, processed_data_path, f'{location_type}_data')
+        save_pickle(final_df, PROCESSED_DATA_PATH, f'{location_type}_data')
         print(f'{location_type} data updated.')
         return final_df

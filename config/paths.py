@@ -59,8 +59,9 @@ class ProjectPaths:
 project_paths = ProjectPaths(PROJECT_PATH)
 
 # data path
-raw_data_path = os.path.join(project_paths.data, 'raw')
-processed_data_path = os.path.join(project_paths.data, 'processed')
-external_data_path = os.path.join(project_paths.data, 'external')
+RAW_DATA_PATH = os.path.join(project_paths.data, 'raw')
+PROCESSED_DATA_PATH = os.path.join(project_paths.data, 'processed')
+EXTERNAL_DATA_PATH = os.path.join(project_paths.data, 'external')
 
-models_path = os.path.join(PROJECT_PATH, 'models') 
+# model path
+MODELS_PATH = os.path.join(PROJECT_PATH, 'models') 
