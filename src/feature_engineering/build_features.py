@@ -168,10 +168,11 @@ class FeatureEngineering:
         return data
 
 
-    def _price_features(self, data, market_type):
+    def _price_features(self, data, market_type, task):
         data = self._capping(data)
         data = self._datetime_features(data)
-        data = self._target(data, market_type)
+        if task == 'train':
+            data = self._target(data, market_type)
         data = self._lags(data)
         data = self._min_max(data)
         data = self._ema(data, market_type)
@@ -207,8 +208,8 @@ class FeatureEngineering:
         return data
 
 
-    def _get_features(self, data, weather, market_type):
-        data = self._price_features(data, market_type)
+    def _get_features(self, data, weather, market_type, task = 'train'):
+        data = self._price_features(data, market_type, task)
         data = self._weather_features(data, weather)
         data = self._interaction_features(data, weather, market_type)
         data = data.drop('date', axis=1)    
