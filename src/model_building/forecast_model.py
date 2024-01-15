@@ -65,6 +65,7 @@ class ModelForecaster:
         result = self._create_daterange(forecast_date, result)
         result = self.modify_forecast(result, forecast_date)  
         result = np.round(result, 1)
+        save_pickle(result, DAM_FORECAST_PATH, f'dam_forecast_{forecast_date}')
         return result
 
     def forecasting_date(self, df, market_type):
@@ -93,23 +94,23 @@ class ModelForecaster:
         Returns:
             pd.DataFrame: Modified forecast values along with lower and upper bounds.
         """
-        forecasts = forecast_df.rename(columns = {'forecast': f'forecast_{forecast_date}',
+        forecasts = forecast_df.rename(columns = {'forecast': f'forecast',
                                                     'lower': 'lower_bound',
                                                     'upper': 'upper_bound'
                                                     }
                                         )
 
         # masking forecast values above 8500 to 10000
-        forecasts[f'forecast_{forecast_date}'] = forecasts[f'forecast_{forecast_date}'].apply(lambda x: 10000 if x > 9000 else x)
+        forecasts[f'forecast'] = forecasts[f'forecast'].apply(lambda x: 10000 if x > 9000 else x)
 
         # making lower bound < forecast < upper_bound
-        forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast_{forecast_date}']), axis=1)
-        forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast_{forecast_date}']), axis=1)
+        forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast']), axis=1)
+        forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast']), axis=1)
 
         # masking upper bound values above 8500 to 10000
         forecasts['upper_bound'] = forecasts['upper_bound'].apply(lambda x: 10000 if x > 8500 else x)
 
-        forecasts = forecasts[['datetime', f'forecast_{forecast_date}', 'lower_bound', 'upper_bound']]
+        forecasts = forecasts[['datetime', f'forecast', 'lower_bound', 'upper_bound']]
         forecasts = forecasts.round(2)
 
         forecasts.set_index('datetime').plot()
