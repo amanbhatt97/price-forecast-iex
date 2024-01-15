@@ -32,10 +32,8 @@ class ProjectPaths:
         self.config = os.path.join(parent_directory, 'config')  # Configuration files
         self.logs = os.path.join(parent_directory, 'logs')       # Logs
         self.models = os.path.join(parent_directory, 'models')   # saved models 
-        self.forecasts_dam = os.path.join(parent_directory, 'forecasts', 'day_ahead')  # DAM forecast files
-        self.forecasts_dir = os.path.join(parent_directory, 'forecasts', 'directional')  # Directional forecast files
-        self.reports_dam = os.path.join(parent_directory, 'reports', 'day_ahead')  # DAM reports
-        self.reports_dir = os.path.join(parent_directory, 'reports', 'directional')  # Directional reports
+        self.forecasts = os.path.join(parent_directory, 'forecasts')  # forecast files
+        self.reports = os.path.join(parent_directory, 'reports')  # reports
 
         # Create directories if they do not exist
         self._create_directories()
@@ -47,7 +45,7 @@ class ProjectPaths:
         """
         directories = [
             self.data, self.src, self.deploy, self.config, self.logs, self.models,
-            self.forecasts_dam, self.forecasts_dir, self.reports_dam, self.reports_dir
+            self.forecasts, self.reports
         ]
 
         # Create directories if they do not exist
@@ -64,4 +62,7 @@ PROCESSED_DATA_PATH = os.path.join(project_paths.data, 'processed')
 EXTERNAL_DATA_PATH = os.path.join(project_paths.data, 'external')
 
 # model path
-MODELS_PATH = os.path.join(PROJECT_PATH, 'models') 
+MODELS_PATH = os.path.join(PROJECT_PATH, 'models')
+
+# dam forecast path
+DAM_FORECAST_PATH = os.path.join(project_paths.forecasts, 'day_ahead') 
