@@ -43,20 +43,20 @@ weather_data = WeatherDataFetcher()
 featured_data = FeatureEngineering(PROJECT_PATH)
 build_model = ModelTraining(PROJECT_PATH)
 
-# Fetch and load processed data
 dam = iex_data._get_processed_data('dam')
 rtm = iex_data._get_processed_data('rtm')
+# weather = weather_data._get_processed_weather('weather')
+# wind = weather_data._get_processed_weather('wind')
+# hydro = weather_data._get_processed_weather('hydro')
+# solar = weather_data._get_processed_weather('solar')
+
+# %%
+# dam = load_pickle(PROCESSED_DATA_PATH, 'dam_data')
+# rtm = load_pickle(PROCESSED_DATA_PATH, 'rtm_data')
 weather = load_pickle(PROCESSED_DATA_PATH, 'weather_data')
 wind = load_pickle(PROCESSED_DATA_PATH, 'wind_data')
 hydro = load_pickle(PROCESSED_DATA_PATH, 'hydro_data')
 solar = load_pickle(PROCESSED_DATA_PATH, 'solar_data')
-
-# Shift date for temporal alignment
-rtm = featured_data.shift_date(rtm, 1)
-weather = featured_data.shift_date(weather, -1)
-hydro = featured_data.shift_date(hydro, -1)
-solar = featured_data.shift_date(solar, -1)
-wind = featured_data.shift_date(wind, -1)
 
 # Merge dataframes
 data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
@@ -100,4 +100,4 @@ save_pickle(upper_model, MODELS_PATH, 'dam_upper')
 # Evaluate the model on training and test data
 evaluator = ModelEvaluator(model, best_features)
 evaluator.evaluate_on_data(X_train, y_train, 'train', 5)
-evaluator.evaluate_on_data(X_test, y_test, 'test', 1)
+# evaluator.evaluate_on_data(X_test, y_test, 'test', 1)
