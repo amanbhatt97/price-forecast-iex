@@ -11,7 +11,7 @@ from src.utils import *
 from config.paths import *
 
 class ModelForecaster:
-    def __init__(self, models_path):
+    def __init__(self, models_path, market_type):
         """
         Initialize the LightGBMForecaster.
 
@@ -19,22 +19,29 @@ class ModelForecaster:
             models_path (str): Path to the directory containing model files.
         """
         self.models_path = models_path
-        self.best_features, self.model, self.lower, self.upper = self.load_model()
+        if market_type == 'dam': 
+            self.best_features, self.model, self.lower, self.upper = self.load_model(market_type)
+        else:
+            self.best_features, self.model = self.load_model(market_type) 
 
-    def load_model(self):
+    def load_model(self, market_type):
         """
         Load LightGBM model and its best features.
 
         Returns:
             tuple: Tuple containing the loaded model and best features.
         """
-        best_features = load_pickle(self.models_path, 'dam_forecast').booster_.feature_name()
-        model = load_pickle(self.models_path, 'dam_forecast')
-        lower = load_pickle(self.models_path, 'dam_lower')
-        upper = load_pickle(self.models_path, 'dam_upper')
-        return best_features, model, lower, upper
+        best_features = load_pickle(self.models_path, f'{market_type}_forecast').booster_.feature_name()
+        if market_type == 'dam':
+            model = load_pickle(self.models_path, f'{market_type}_forecast')
+            lower = load_pickle(self.models_path, f'{market_type}_lower')
+            upper = load_pickle(self.models_path, f'{market_type}_upper')
+            return best_features, model, lower, upper
+        else:
+            model = load_pickle(self.models_path, f'{market_type}_forecast')
+            return best_features, model 
 
-    def create_forecast(self, data, forecast_date):
+    def create_forecast(self, data, forecast_date, market_type):
         """
         Create forecast using a LightGBM model.
 
@@ -48,24 +55,36 @@ class ModelForecaster:
         features = ['datetime'] + self.best_features
         data_for_training = data.reset_index()[features].copy()
 
-        test_cutoff = datetime.strptime(forecast_date, '%Y-%m-%d') - timedelta(days=1)
+        if market_type == 'dam':
+            n = 1
+        elif market_type == 'rtm':
+            n = 2
+        else:
+            print('chose either dam or rtm')
+        test_cutoff = datetime.strptime(forecast_date, '%Y-%m-%d') - timedelta(days=n)
         X = data_for_training.copy()
         X_test = X[(X['datetime'] >= test_cutoff) & (X['datetime'] < test_cutoff + timedelta(days=1))].iloc[:, 1:].copy()
 
-        pred_test = self.model.predict(X_test)
-        lower_pred = self.lower.predict(X_test)
-        upper_pred = self.upper.predict(X_test)
+        if market_type == 'dam':
+            pred_test = self.model.predict(X_test)
+            lower_pred = self.lower.predict(X_test)
+            upper_pred = self.upper.predict(X_test)
+            result = pd.DataFrame({
+            f'{market_type}_forecast': pred_test,
+            'lower_bound': lower_pred,
+            'upper_bound': upper_pred
+            }) 
 
-        result = pd.DataFrame({
-            'forecast': pred_test,
-            'lower': lower_pred,
-            'upper': upper_pred
-        })
+        elif market_type == 'rtm':
+            pred_test = self.model.predict(X_test) 
+            result = pd.DataFrame({
+            f'{market_type}_forecast': pred_test,
+            })
 
         result = self._create_daterange(forecast_date, result)
-        result = self.modify_forecast(result, forecast_date)  
+        result = self.modify_forecast(result, market_type) 
         result = np.round(result, 1)
-        save_pickle(result, DAM_FORECAST_PATH, f'dam_forecast_{forecast_date}')
+        save_pickle(result, DAM_FORECAST_PATH, f'{market_type}_forecast_{forecast_date}')
         return result
 
     def forecasting_date(self, df, market_type):
@@ -83,7 +102,7 @@ class ModelForecaster:
         forecasting_date = (last_datetime + pd.DateOffset(days=days_to_add)).strftime('%Y-%m-%d')
         return forecasting_date
     
-    def modify_forecast(self, forecast_df, forecast_date):
+    def modify_forecast(self, forecasts, market_type):
         """
         Modify forecast values and bounds.
 
@@ -94,23 +113,23 @@ class ModelForecaster:
         Returns:
             pd.DataFrame: Modified forecast values along with lower and upper bounds.
         """
-        forecasts = forecast_df.rename(columns = {'forecast': f'forecast',
-                                                    'lower': 'lower_bound',
-                                                    'upper': 'upper_bound'
-                                                    }
-                                        )
+        if market_type == 'dam':
+            # masking forecast values 
+            forecasts[f'{market_type}_forecast'] = forecasts[f'{market_type}_forecast'].apply(lambda x: 10000 if x > 9000 else x)
 
-        # masking forecast values above 8500 to 10000
-        forecasts[f'forecast'] = forecasts[f'forecast'].apply(lambda x: 10000 if x > 9000 else x)
+            # making lower bound < forecast < upper_bound
+            forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast']), axis=1)
+            forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast']), axis=1)
 
-        # making lower bound < forecast < upper_bound
-        forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast']), axis=1)
-        forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast']), axis=1)
+            # masking upper bound values above 8500 to 10000
+            forecasts['upper_bound'] = forecasts['upper_bound'].apply(lambda x: 10000 if x > 8500 else x)
 
-        # masking upper bound values above 8500 to 10000
-        forecasts['upper_bound'] = forecasts['upper_bound'].apply(lambda x: 10000 if x > 8500 else x)
+            forecasts = forecasts[['datetime', f'forecast', 'lower_bound', 'upper_bound']]
+        
+        elif market_type == 'rtm':
+            # masking forecast values
+            forecasts[f'{market_type}_forecast'] = forecasts[f'{market_type}_forecast'].apply(lambda x: 10000 if x > 9000 else x)
 
-        forecasts = forecasts[['datetime', f'forecast', 'lower_bound', 'upper_bound']]
         forecasts = forecasts.round(2)
 
         forecasts.set_index('datetime').plot()
@@ -120,6 +139,3 @@ class ModelForecaster:
         q = pd.DataFrame(pd.date_range(start = forecast_date, periods = 96, freq = '15min'), columns = ['datetime'])
         forecast = pd.concat([q,forecast],axis = 1)
         return forecast
-
-    def _create_rtm_forecast(self, data, forecast_date):
-        pass
