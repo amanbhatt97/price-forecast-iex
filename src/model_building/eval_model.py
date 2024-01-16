@@ -15,10 +15,15 @@ class ModelEvaluator:
         self.model = model
         self.best_features = best_features
 
-    def _process_results(self, predictions_df):
+    def _process_results(self, predictions_df, market_type):
         results = predictions_df.reset_index()
         results['prediction'] = results['prediction'].apply(lambda x: 10000 if x > 9000 else x)
-        results = featured_data.shift_date(results, 1)
+        if market_type == 'dam':
+            results = featured_data.shift_date(results, 1)
+        elif market_type == 'rtm':
+            results = featured_data.shift_date(results, 2) 
+        else:
+            print('chose dam or rtm')
         results['date'] = results['datetime'].dt.date
         results['mae'] = np.abs(results['target'] - results['prediction'])
         return results
@@ -30,7 +35,7 @@ class ModelEvaluator:
         mape = round(mean_absolute_percentage_error(results['target'], results['prediction']), 2) * 100
         print(f'MAPE: {mape}')
 
-    def evaluate_on_data(self, X, y, dataset_name, n):
+    def evaluate_on_data(self, X, y, dataset_name, n, market_type):
         # Predictions on the dataset
         predictions = self.model.predict(X[self.best_features])
 
@@ -40,7 +45,7 @@ class ModelEvaluator:
         predictions_df['prediction'] = predictions
 
         # Process and evaluate results
-        results = self._process_results(predictions_df)
+        results = self._process_results(predictions_df, market_type)
 
         # Plot the results
         print(f'Evaluating on {dataset_name} data:')
