@@ -35,7 +35,11 @@ class ModelEvaluator:
         mape = round(mean_absolute_percentage_error(results['target'], results['prediction']), 2) * 100
         print(f'MAPE: {mape}')
 
-    def evaluate_on_data(self, X, y, dataset_name, n, market_type):
+    def evaluate_on_data(self, X, y, n, market_type):
+        
+        X = X.tail(96*n)
+        y = y.tail(96*n)
+        
         # Predictions on the dataset
         predictions = self.model.predict(X[self.best_features])
 
@@ -48,7 +52,6 @@ class ModelEvaluator:
         results = self._process_results(predictions_df, market_type)
 
         # Plot the results
-        print(f'Evaluating on {dataset_name} data:')
         self._plot_results(results, n)
 
         # Calculate and print MAPE
