@@ -31,9 +31,19 @@ class ModelEvaluator:
     def _plot_results(self, results, n):
         results.tail(96 * n).set_index('datetime')[['target', 'prediction']].plot()
 
-    def _calculate_mape(self, results):
-        mape = round(mean_absolute_percentage_error(results['target'], results['prediction']), 2) * 100
-        print(f'MAPE: {mape}')
+    def _calculate_mape(self, results, n):
+        mape_per_day = []
+        for day in range(0, n):
+            target_date = results['date'].max() - pd.Timedelta(days=day)
+            day_results = results[results['date'] == target_date]
+            daily_mape = mean_absolute_percentage_error(day_results['target'], day_results['prediction'])
+            mape_per_day.append(daily_mape)
+            print(f'  MAPE for {target_date}: {round(daily_mape * 100, 2)}')
+
+        avg_mape = round(mean_absolute_percentage_error(results['target'], results['prediction']) * 100, 2)
+        print(f'  Average MAPE for last {n} days: {avg_mape}')
+
+        return mape_per_day, avg_mape
 
     def evaluate_on_data(self, X, y, n, market_type):
         
@@ -55,4 +65,4 @@ class ModelEvaluator:
         self._plot_results(results, n)
 
         # Calculate and print MAPE
-        self._calculate_mape(results)
+        self._calculate_mape(results, n)
