@@ -1,4 +1,6 @@
 # %%
+import time
+start_time = time.time()
 import os, sys
 import pandas as pd
 import numpy as np
@@ -27,20 +29,20 @@ from src.utils import *
 from config.paths import *
 
 # %%
+market_type = 'dam'
+
+# %%
 # creating instances
 iex_data = IexDataFetcher()
 weather_data = WeatherDataFetcher()
 
 featured_data = FeatureEngineering(PROJECT_PATH)
-forecasting = ModelForecaster(MODELS_PATH) 
+forecasting = ModelForecaster(MODELS_PATH, market_type) 
 db_insert = DAMInsertion() 
 
 # %%
-market_type = 'dam'
-
-# %%
-dam = iex_data._get_processed_data('dam')
-rtm = iex_data._get_processed_data('rtm')
+# dam = iex_data._get_processed_data('dam')
+# rtm = iex_data._get_processed_data('rtm')
 # weather = weather_data._get_processed_weather('weather')
 # wind = weather_data._get_processed_weather('wind')
 # hydro = weather_data._get_processed_weather('hydro')
@@ -53,6 +55,7 @@ weather = load_pickle(PROCESSED_DATA_PATH, 'weather_data')
 wind = load_pickle(PROCESSED_DATA_PATH, 'wind_data')
 hydro = load_pickle(PROCESSED_DATA_PATH, 'hydro_data')
 solar = load_pickle(PROCESSED_DATA_PATH, 'solar_data')
+print('Data loaded.')
 
 # %%
 rtm = featured_data.shift_date(rtm, 1) 
@@ -67,16 +70,22 @@ data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
 data = featured_data._get_features(data, weather, market_type, task = 'inference')
 
 # %%
+print('Features created.')
+
+# %%
 forecast_date = forecasting.forecasting_date(data, market_type)
 
 # %%
-forecast = forecasting.create_forecast(data, forecast_date)
+print('forecasting date: ', forecast_date)
 
 # %%
-forecast
+forecast = forecasting.create_forecast(data, forecast_date, market_type)
 
 # %%
-db_insert.save_forecast(forecast,  forecast_date, 'forecast')
+print(f'{market_type} forecast created.')
+
+# %%
+db_insert.save_forecast(forecast, forecast_date, f'{market_type}_forecast')
 
 # %%
 db_insert.save_forecast(forecast,  forecast_date, 'lower_bound')
@@ -85,6 +94,9 @@ db_insert.save_forecast(forecast,  forecast_date, 'lower_bound')
 db_insert.save_forecast(forecast,  forecast_date, 'upper_bound')
 
 # %%
+end_time = time.time()
+total_time = (end_time - start_time)/60
+print(f'Forecasting time: {total_time:.2f} minutes.')
 
 
 
