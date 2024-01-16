@@ -1,4 +1,6 @@
 # %%
+import time
+start_time = time.time()
 import os, sys
 import pandas as pd
 import numpy as np
@@ -37,23 +39,27 @@ build_model = ModelTraining(PROJECT_PATH)
 
 # %%
 market_type = 'dam'
+n = 5   # number of days for which evaluation is reqd
 
 # %% [markdown]
 # ### Data Ingestion
 
 # %%
-dam = iex_data._get_processed_data('dam')
-rtm = iex_data._get_processed_data('rtm')
+# dam = iex_data._get_processed_data('dam')
+# rtm = iex_data._get_processed_data('rtm')
 # weather = weather_data._get_processed_weather('weather')
 # wind = weather_data._get_processed_weather('wind')
 # hydro = weather_data._get_processed_weather('hydro')
 # solar = weather_data._get_processed_weather('solar')
 
 # %%
+dam = load_pickle(PROCESSED_DATA_PATH, 'dam_data')
+rtm = load_pickle(PROCESSED_DATA_PATH, 'rtm_data')
 weather = load_pickle(PROCESSED_DATA_PATH, 'weather_data')
 wind = load_pickle(PROCESSED_DATA_PATH, 'wind_data')
 hydro = load_pickle(PROCESSED_DATA_PATH, 'hydro_data')
 solar = load_pickle(PROCESSED_DATA_PATH, 'solar_data')
+print('Data loaded.')
 
 # %% [markdown]
 # ### Feature Engineering
@@ -71,31 +77,28 @@ data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
 training_data = featured_data._get_features(data, weather, market_type)
 
 # %%
-save_pickle(training_data, PROCESSED_DATA_PATH, f'{market_type}_training_data')
+print('Features created.')
 
 # %% [markdown]
-# ### Model Building
-
-# %%
-training_data = load_pickle(PROCESSED_DATA_PATH, f'{market_type}_training_data')
+# ### Features & Parameters
 
 # %%
 # trail and error
 n_trials = 50
-n_features = 25
+n_features = 10
 
 # %%
 best_features, best_params = build_model._features_n_params(training_data, n_trials, n_features)
 
-# %% [markdown]
-# ### Model Training & Evaluation
-
 # %%
-n = 5
+print('Best Features and Parameters found.')
+
+# %% [markdown]
+# ### Model Evaluation
 
 # %%
 # training upto this date
-training_upto = training_data['datetime'][::96].iloc[-n].strftime('%Y-%m-%d')
+training_upto = training_data['datetime'][::96].iloc[-n-1].strftime('%Y-%m-%d')
 validation_upto = datetime.now().date().strftime('%Y-%m-%d')
 X_train, y_train, X_test, y_test, X_valid, y_valid = build_model._split_data(training_data, training_upto, validation_upto)
 
@@ -108,6 +111,7 @@ if n > X_test[::96].shape[0]:
 
 # %%
 evaluator = ModelEvaluator(model, best_features)
+print('Model Evaluation:')
 evaluator.evaluate_on_data(X_test, y_test, n, market_type)
 
 # %% [markdown]
@@ -122,13 +126,19 @@ X_train, y_train, X_test, y_test, X_valid, y_valid = build_model._split_data(tra
 # %%
 model = build_model._train_model(X_train, y_train, best_params, best_features, objective = 'regression')
 save_pickle(model, MODELS_PATH, f'{market_type}_forecast')
+print(f'{market_type}_forecast model saved.')
 
 # %%
 lower_model = build_model._train_model(X_train, y_train, best_params, best_features, objective = 'quantile', alpha = 0.1)
 save_pickle(lower_model, MODELS_PATH, f'{market_type}_lower')
+print(f'{market_type}_lower model saved.')
 
 # %%
 upper_model = build_model._train_model(X_train, y_train, best_params, best_features, objective = 'quantile', alpha = 0.9)
 save_pickle(upper_model, MODELS_PATH, f'{market_type}_upper')
+print(f'{market_type}_upper model saved.')
 
-
+# %%
+end_time = time.time()
+total_time = (end_time - start_time)/60
+print(f'Training time: {total_time:.2f} minutes.')
