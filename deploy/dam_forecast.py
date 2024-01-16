@@ -36,6 +36,9 @@ forecasting = ModelForecaster(MODELS_PATH)
 db_insert = DAMInsertion() 
 
 # %%
+market_type = 'dam'
+
+# %%
 dam = iex_data._get_processed_data('dam')
 rtm = iex_data._get_processed_data('rtm')
 # weather = weather_data._get_processed_weather('weather')
@@ -44,8 +47,8 @@ rtm = iex_data._get_processed_data('rtm')
 # solar = weather_data._get_processed_weather('solar')
 
 # %%
-# dam = load_pickle(PROCESSED_DATA_PATH, 'dam_data')
-# rtm = load_pickle(PROCESSED_DATA_PATH, 'rtm_data')
+dam = load_pickle(PROCESSED_DATA_PATH, 'dam_data')
+rtm = load_pickle(PROCESSED_DATA_PATH, 'rtm_data')
 weather = load_pickle(PROCESSED_DATA_PATH, 'weather_data')
 wind = load_pickle(PROCESSED_DATA_PATH, 'wind_data')
 hydro = load_pickle(PROCESSED_DATA_PATH, 'hydro_data')
@@ -61,10 +64,10 @@ wind = featured_data.shift_date(wind, -1)
 data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
 
 # %%
-data = featured_data._get_features(data, weather, market_type = 'dam', task = 'inference')
+data = featured_data._get_features(data, weather, market_type, task = 'inference')
 
 # %%
-forecast_date = forecasting.forecasting_date(data, 'dam')
+forecast_date = forecasting.forecasting_date(data, market_type)
 
 # %%
 forecast = forecasting.create_forecast(data, forecast_date)
