@@ -64,9 +64,9 @@ class ModelForecaster:
         test_cutoff = datetime.strptime(forecast_date, '%Y-%m-%d') - timedelta(days=n)
         X = data_for_training.copy()
         X_test = X[(X['datetime'] >= test_cutoff) & (X['datetime'] < test_cutoff + timedelta(days=1))].iloc[:, 1:].copy()
+        pred_test = self.model.predict(X_test)
 
         if market_type == 'dam':
-            pred_test = self.model.predict(X_test)
             lower_pred = self.lower.predict(X_test)
             upper_pred = self.upper.predict(X_test)
             result = pd.DataFrame({
@@ -84,7 +84,10 @@ class ModelForecaster:
         result = self._create_daterange(forecast_date, result)
         result = self.modify_forecast(result, market_type) 
         result = np.round(result, 1)
-        save_pickle(result, DAM_FORECAST_PATH, f'{market_type}_forecast_{forecast_date}')
+        if market_type == 'dam':
+            save_pickle(result, DAM_FORECAST_PATH, f'{market_type}_forecast_{forecast_date}')
+        else:
+            save_pickle(result, DIR_FORECAST_PATH, f'{market_type}_forecast_{forecast_date}')
         return result
 
     def forecasting_date(self, df, market_type):
@@ -118,13 +121,13 @@ class ModelForecaster:
             forecasts[f'{market_type}_forecast'] = forecasts[f'{market_type}_forecast'].apply(lambda x: 10000 if x > 9000 else x)
 
             # making lower bound < forecast < upper_bound
-            forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'forecast']), axis=1)
-            forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'forecast']), axis=1)
+            forecasts['lower_bound'] = forecasts.apply(lambda row: min(row['lower_bound'], row[f'{market_type}_forecast']), axis=1)
+            forecasts['upper_bound'] = forecasts.apply(lambda row: max(row['upper_bound'], row[f'{market_type}_forecast']), axis=1)
 
             # masking upper bound values above 8500 to 10000
             forecasts['upper_bound'] = forecasts['upper_bound'].apply(lambda x: 10000 if x > 8500 else x)
 
-            forecasts = forecasts[['datetime', f'forecast', 'lower_bound', 'upper_bound']]
+            forecasts = forecasts[['datetime', f'{market_type}_forecast', 'lower_bound', 'upper_bound']]
         
         elif market_type == 'rtm':
             # masking forecast values

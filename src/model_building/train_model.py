@@ -2,7 +2,13 @@ import lightgbm as lgb
 import optuna
 import pandas as pd
 from sklearn.metrics import mean_absolute_percentage_error
+import warnings, os
+from contextlib import redirect_stdout, redirect_stderr
+import logging
 
+# Suppress INFO messages from Optuna
+optuna_logger = logging.getLogger('optuna')
+optuna_logger.setLevel(logging.WARNING)
 
 class ModelTraining:
 
@@ -69,22 +75,28 @@ class ModelTraining:
                 'max_depth': trial.suggest_int('max_depth', 3, 15),
                 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, step=0.01),
                 }
-        
-            model = lgb.LGBMRegressor(**param, verbose=-1)
-            model.fit(
-                X_train[best_features], y_train,
-                eval_set=[(X_valid[best_features], y_valid)],
-                early_stopping_rounds=10, eval_metric='mape', verbose=False
-            )
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=UserWarning)  
+                with redirect_stdout(open(os.devnull, 'w')), redirect_stderr(open(os.devnull, 'w')):
+                    model = lgb.LGBMRegressor(**param, verbose=-1)
+                    model.fit(
+                        X_train[best_features], y_train,
+                        eval_set=[(X_valid[best_features], y_valid)],
+                        early_stopping_rounds=10, eval_metric='mape', verbose=False
+                    )
             preds = model.predict(X_valid[best_features])
             error = round(mean_absolute_percentage_error(y_valid, preds) * 100, 2)
         
             return error
 
-        study = optuna.create_study(direction='minimize')
-        study.optimize(objective, n_trials=n_trials)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=UserWarning)  
+            with redirect_stdout(open(os.devnull, 'w')), redirect_stderr(open(os.devnull, 'w')):
+                study = optuna.create_study(direction='minimize')
+                study.optimize(objective, n_trials=n_trials)
         best_params = study.best_params
-        print('\n\nBest MAPE achieved: ', study.best_trial.value) 
+        # print('Training MAPE: ', study.best_trial.value) 
         return best_params
 
 
@@ -100,8 +112,11 @@ class ModelTraining:
 
 
     def _train_model(self, X_train, y_train, best_params, best_features, objective, alpha = None):
-        model = lgb.LGBMRegressor(objective = objective, **best_params, alpha = alpha)
-        model.fit(X_train[best_features], y_train, 
-                verbose = -1
-                )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=UserWarning)  
+            with redirect_stdout(open(os.devnull, 'w')), redirect_stderr(open(os.devnull, 'w')):
+                model = lgb.LGBMRegressor(objective = objective, **best_params, alpha = alpha)
+                model.fit(X_train[best_features], y_train, 
+                        verbose = -1
+                        )
         return model
