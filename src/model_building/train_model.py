@@ -1,8 +1,6 @@
 import lightgbm as lgb
 import optuna
 import pandas as pd
-import os, sys
-import pickle
 from sklearn.metrics import mean_absolute_percentage_error
 
 
@@ -72,7 +70,7 @@ class ModelTraining:
                 'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3, step=0.01),
                 }
         
-            model = lgb.LGBMRegressor(**param)
+            model = lgb.LGBMRegressor(**param, verbose=-1)
             model.fit(
                 X_train[best_features], y_train,
                 eval_set=[(X_valid[best_features], y_valid)],
@@ -90,7 +88,12 @@ class ModelTraining:
         return best_params
 
 
-    def _features_n_params(self, X_train, y_train, X_valid, y_valid, n_trials, n_features):
+    def _features_n_params(self, training_data, n_trials, n_features):
+        # Split the data
+        training_upto = training_data.iloc[int(training_data.shape[0]*0.7)]['datetime'].strftime('%Y-%m-%d')      
+        validation_upto = training_data.iloc[int(training_data.shape[0]*0.85)]['datetime'].strftime('%Y-%m-%d')        
+        X_train, y_train, X_valid, y_valid, X_test, y_test = self._split_data(training_data, training_upto, validation_upto)
+        
         best_features = self._find_best_features(X_train, y_train, X_valid, y_valid, n_features)
         best_params = self._hyperparameter_tuning(X_train, y_train, X_valid, y_valid, n_trials, best_features)
         return best_features, best_params
