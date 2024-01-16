@@ -120,3 +120,6 @@ class ModelForecaster:
         q = pd.DataFrame(pd.date_range(start = forecast_date, periods = 96, freq = '15min'), columns = ['datetime'])
         forecast = pd.concat([q,forecast],axis = 1)
         return forecast
+
+    def _create_rtm_forecast(self, data, forecast_date):
+        pass
