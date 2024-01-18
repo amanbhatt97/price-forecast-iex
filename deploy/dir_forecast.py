@@ -1,4 +1,9 @@
 # %%
+"""
+Script to forecast directional market values.
+
+Author: Aman Bhatt
+"""
 import time
 start_time = time.time()
 import os, sys
@@ -6,6 +11,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
+from dotenv import load_dotenv
+load_dotenv()
 PROJECT_PATH = os.getenv('PROJECT_DIR')
 sys.path.append(PROJECT_PATH)
 
@@ -26,9 +33,10 @@ from src.db_insertion.db_insertion import DirInsertion
 from src.utils import *
 from config.paths import *
 
+forecasting_logs = configure_logger(LOGS_PATH, 'forecasting.log')
 # %%
 market_type = 'rtm'
-
+forecasting_logs.info('%s forecasting script running.', market_type)
 # %%
 # creating instances
 iex_data = IexDataFetcher()
@@ -53,8 +61,9 @@ weather = load_pickle(PROCESSED_DATA_PATH, 'weather_data')
 wind = load_pickle(PROCESSED_DATA_PATH, 'wind_data')
 hydro = load_pickle(PROCESSED_DATA_PATH, 'hydro_data')
 solar = load_pickle(PROCESSED_DATA_PATH, 'solar_data')
+holidays = featured_data.process_holidays(load_pickle(EXTERNAL_DATA_PATH, 'holidays_data'))
 print('Data loaded.')
-
+forecasting_logs.info('Data loaded.')
 # %%
 rtm = rtm[rtm['datetime'] < datetime.now().strftime('%Y-%m-%d')]
 
@@ -64,6 +73,8 @@ weather = featured_data.shift_date(weather, 2)
 hydro = featured_data.shift_date(hydro, 2) 
 solar = featured_data.shift_date(solar, 2) 
 wind = featured_data.shift_date(wind, 2)
+holidays = featured_data.shift_date(holidays, -2) 
+holidays = holidays.rename(columns = {'holiday': 'holiday_next_day'})
 
 data = featured_data.merge_dataframes([rtm, dam, weather, hydro, solar, wind])
 
@@ -71,20 +82,20 @@ data = featured_data.merge_dataframes([rtm, dam, weather, hydro, solar, wind])
 data = featured_data._get_features(data, weather, market_type, task = 'inference')
 
 # %%
-print('Features created.')
-
+print(f'Features created for {market_type}.')
+forecasting_logs.info('Features created for %s.', market_type)
 # %%
 forecast_date = forecasting.forecasting_date(data, market_type)
 
 # %%
-print('forecasting date: ', forecast_date)
-
+print('Forecasting date: ', forecast_date)
+forecasting_logs.info('Forecasting date: %s.', forecast_date)
 # %%
 forecast = forecasting.create_forecast(data, forecast_date, market_type)
 
 # %%
 print(f'{market_type} forecast created.')
-
+forecasting_logs.info('%s forecast created.', market_type)
 # %%
 dam_forecast = load_pickle(DAM_FORECAST_PATH, f'dam_forecast_{forecast_date}')
 rtm_forecast = load_pickle(DIR_FORECAST_PATH, f'{market_type}_forecast_{forecast_date}')
@@ -114,5 +125,6 @@ db_insert.save_forecast(forecasts, forecast_date, 'dir')
 end_time = time.time()
 total_time = (end_time - start_time)/60
 print(f'Forecasting time: {total_time:.2f} minutes.')
-
-
+forecasting_logs.info('Forecasting time: %.2f minutes.', total_time)
+forecasting_logs.info('**********************************************')
+forecasting_logs.info('**********************************************\n')
