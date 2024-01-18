@@ -66,4 +66,10 @@ MODELS_PATH = os.path.join(PROJECT_PATH, 'models')
 
 # dam forecast path
 DAM_FORECAST_PATH = os.path.join(project_paths.forecasts, 'day_ahead')
-DIR_FORECAST_PATH = os.path.join(project_paths.forecasts, 'directional') 
+DIR_FORECAST_PATH = os.path.join(project_paths.forecasts, 'directional')
+
+# reports path
+REPORTS_PATH = project_paths.reports
+
+# logs path
+LOGS_PATH = project_paths.logs
