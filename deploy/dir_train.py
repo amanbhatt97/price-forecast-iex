@@ -51,7 +51,7 @@ build_model = ModelTraining(PROJECT_PATH)
 
 # %%
 market_type = 'rtm'
-n = 5   # number of days for which evaluation is reqd
+n = 10   # number of days for which evaluation is reqd
 
 training_logs.info('%s training script running.', market_type)
 # %% [markdown]
