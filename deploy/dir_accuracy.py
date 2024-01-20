@@ -13,6 +13,9 @@ from datetime import datetime, timedelta
 import warnings
 warnings.filterwarnings('ignore')
 
+os.environ['TZ'] = 'Asia/Calcutta'
+time.tzset()
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -40,6 +43,7 @@ accuracy_logs.info('%s accuracy script running.', market_type)
 dam_actual = iex_data._get_processed_data('dam')[['datetime', f'mcp_dam']]
 rtm_actual = iex_data._get_processed_data('rtm')[['datetime', f'mcp_rtm']]
 
+rtm_actual = rtm_actual[rtm_actual['datetime'].dt.date < datetime.now().date()]
 # %%
 dam_rtm_actual = featured_data.merge_dataframes([rtm_actual, dam_actual])
 dam_rtm_actual['actual'] = -1  # Initialize with -1 for cases where mcp_dam is equal to mcp_rtm
@@ -58,11 +62,11 @@ acc_start_date = (acc_report['Date'].iloc[-1]\
 # %%
 try:
     sdt = acc_start_date
-    tdt = (datetime.now() + timedelta(days=30)).strftime('%d-%m-%Y')
+    tdt = (datetime.now() + timedelta(days=28)).strftime('%d-%m-%Y')
     forecast = iex_forecast._get_processed_forecast(sdt, tdt, market_type)
-except:
-    print(f'{market_type} accuracy report already updated.')
-    accuracy_logs.info('%s accuracy report already updated.', market_type)
+except Exception as e:
+    print(f'{market_type} data not available for selected dates: ', str(e))
+    accuracy_logs.info('%s data not available for selected dates: ', market_type, str(e))
 # %%
 df = featured_data.merge_dataframes([forecast, dir_actual])
 
@@ -75,7 +79,7 @@ curr_acc = df.groupby(df['Date'])['Accuracy'].sum().reset_index()
 
 # %%
 acc = pd.concat([acc_report, curr_acc], ignore_index = True)
-
+acc['Date'] = pd.to_datetime(acc['Date']).dt.date
 # %%
 save_pickle(acc, REPORTS_PATH, 'dir_accuracy_report')
 save_excel(acc, REPORTS_PATH, 'dir_accuracy_report')
