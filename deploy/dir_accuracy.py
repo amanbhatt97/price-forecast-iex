@@ -64,31 +64,29 @@ try:
     sdt = acc_start_date
     tdt = (datetime.now() + timedelta(days=28)).strftime('%d-%m-%Y')
     forecast = iex_forecast._get_processed_forecast(sdt, tdt, market_type)
+
+    df = featured_data.merge_dataframes([forecast, dir_actual])
+    df['Accuracy'] = (df['actual'] == df['forecast']).astype(int)
+    df['Date'] = df['datetime'].dt.date
+
+    # %%
+    curr_acc = df.groupby(df['Date'])['Accuracy'].sum().reset_index()
+
+    # %%
+    acc = pd.concat([acc_report, curr_acc], ignore_index = True)
+    acc['Date'] = pd.to_datetime(acc['Date']).dt.date
+    # %%
+    save_pickle(acc, REPORTS_PATH, 'dir_accuracy_report')
+    save_excel(acc, REPORTS_PATH, 'dir_accuracy_report')
+    # %%
+    print(f'Accuracy report for directional generated.')
+    accuracy_logs.info('Accuracy report for %s generated.', market_type)
+    end_time = time.time()
+    total_time = (end_time - start_time)/60
+    print(f'Run time: {total_time:.2f} minutes.')
+    accuracy_logs.info('Run time: %.2f minutes.', total_time)
+    accuracy_logs.info('**********************************************')
+    accuracy_logs.info('**********************************************\n')
 except Exception as e:
     print(f'{market_type} data not available for selected dates: ', str(e))
     accuracy_logs.info('%s data not available for selected dates: ', market_type, str(e))
-# %%
-df = featured_data.merge_dataframes([forecast, dir_actual])
-
-# %%
-df['Accuracy'] = (df['actual'] == df['forecast']).astype(int)
-df['Date'] = df['datetime'].dt.date
-
-# %%
-curr_acc = df.groupby(df['Date'])['Accuracy'].sum().reset_index()
-
-# %%
-acc = pd.concat([acc_report, curr_acc], ignore_index = True)
-acc['Date'] = pd.to_datetime(acc['Date']).dt.date
-# %%
-save_pickle(acc, REPORTS_PATH, 'dir_accuracy_report')
-save_excel(acc, REPORTS_PATH, 'dir_accuracy_report')
-# %%
-print(f'Accuracy report for directional generated.')
-accuracy_logs.info('Accuracy report for %s generated.', market_type)
-end_time = time.time()
-total_time = (end_time - start_time)/60
-print(f'Run time: {total_time:.2f} minutes.')
-accuracy_logs.info('Run time: %.2f minutes.', total_time)
-accuracy_logs.info('**********************************************')
-accuracy_logs.info('**********************************************\n')
