@@ -28,11 +28,16 @@ weather_data = WeatherDataFetcher()
 
 # %%
 dam = iex_data._get_processed_data('dam')
+data_logs.info('dam data uptated upto: %s', dam['datetime'].iloc[-1])
+
 rtm = iex_data._get_processed_data('rtm')
+data_logs.info('rtm data uptated upto: %s', rtm['datetime'].iloc[-1])
+
 weather = weather_data._get_processed_weather('weather')
 wind = weather_data._get_processed_weather('wind')
 hydro = weather_data._get_processed_weather('hydro')
 solar = weather_data._get_processed_weather('solar')
+
 
 # %%
 end_time = time.time()
