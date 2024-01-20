@@ -51,7 +51,7 @@ build_model = ModelTraining(PROJECT_PATH)
 
 # %%
 market_type = 'dam'
-n = 5   # number of days for which evaluation is reqd
+n = 8   # number of days for which evaluation is reqd
 
 training_logs.info('%s training script running.', market_type)
 # %% [markdown]
@@ -93,8 +93,8 @@ data = featured_data.merge_dataframes([dam, rtm, weather, hydro, solar, wind])
 training_data = featured_data._get_features(data, weather, market_type)
 
 # %%
-print(f'Features created for {market_type}.')
-training_logs.info('Features created for %s.', market_type)
+print(f'Features created for {market_type} training.')
+training_logs.info('Features created for %s training.', market_type)
 # %% [markdown]
 # ### Features & Parameters
 
