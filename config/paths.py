@@ -57,6 +57,7 @@ class ProjectPaths:
 project_paths = ProjectPaths(PROJECT_PATH)
 
 # data path
+DATA_PATH = project_paths.data 
 RAW_DATA_PATH = os.path.join(project_paths.data, 'raw')
 PROCESSED_DATA_PATH = os.path.join(project_paths.data, 'processed')
 EXTERNAL_DATA_PATH = os.path.join(project_paths.data, 'external')
@@ -65,6 +66,7 @@ EXTERNAL_DATA_PATH = os.path.join(project_paths.data, 'external')
 MODELS_PATH = os.path.join(PROJECT_PATH, 'models')
 
 # dam forecast path
+FORECAST_PATH = project_paths.forecasts
 DAM_FORECAST_PATH = os.path.join(project_paths.forecasts, 'day_ahead')
 DIR_FORECAST_PATH = os.path.join(project_paths.forecasts, 'directional')
 
