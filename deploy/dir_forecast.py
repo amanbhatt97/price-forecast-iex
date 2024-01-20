@@ -16,6 +16,9 @@ load_dotenv()
 PROJECT_PATH = os.getenv('PROJECT_DIR')
 sys.path.append(PROJECT_PATH)
 
+os.environ['TZ'] = 'Asia/Calcutta'
+time.tzset()
+
 # ignore warnings
 import warnings
 warnings.filterwarnings('ignore')
@@ -115,6 +118,10 @@ forecasts.loc[(forecasts['dam_rtm_diff'] == 0), 'dam_greater'] = -1
 forecasts = forecasts[['datetime', 'dam_greater']]
 forecasts = forecasts.rename(columns = {'dam_greater': f'dir_forecast'})
 
+save_pickle(forecasts, DIR_FORECAST_PATH, f'dir_forecast_{forecast_date}')
+save_excel(forecasts, DIR_FORECAST_PATH, f'dir_forecast_{forecast_date}')
+print('Directional forecast created.')
+forecasting_logs.info('Directional forecast created.')
 # %%
 dir_rtm.set_index('datetime')[['dam_forecast', f'{market_type}_forecast']].plot()
 
