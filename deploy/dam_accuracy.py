@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 plt.rcParams['figure.figsize'] = (12, 6)
 
+os.environ['TZ'] = 'Asia/Calcutta'
+time.tzset()
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -49,7 +52,7 @@ acc_start_date = (datetime.strptime(acc_report['Date'].iloc[-1], '%d-%m-%Y')\
 # %%
 try:
     sdt = acc_start_date
-    tdt = (datetime.now() + timedelta(days=30)).strftime('%d-%m-%Y')
+    tdt = (datetime.now() + timedelta(days=28)).strftime('%d-%m-%Y')
     forecast = iex_forecast._get_processed_forecast(sdt, tdt, market_type)
 except:
     print(f'{market_type} accuracy report already updated.')
