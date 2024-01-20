@@ -22,6 +22,7 @@ from config.paths import LOGS_PATH
 from src.utils import *
 
 data_logs = configure_logger(LOGS_PATH, 'data.log')
+data_logs.info('Data fretching script running.')
 
 iex_data = IexDataFetcher()
 weather_data = WeatherDataFetcher()
